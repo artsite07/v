@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Adlan Madjied Ridho</title>
+  <link rel="icon" type="image/png" href="1.png">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    body {
+      background-color: #000;
+      color: cyan;
+      font-family: monospace;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      text-shadow: 0 0 15px cyan;
+    }
+    .input-container {
+      width: 80%;
+      margin: 15px auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      background: #000;
+      border: 1px solid cyan;
+      color: cyan;
+      font-family: monospace;
+      border-radius: 8px;
+      text-transform: capitalize;
+    }
+    button {
+      background: #000;
+      border: 1px solid cyan;
+      color: cyan;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: cyan;
+      color: #000;
+    }
+    .back-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1000;
+    }
+    .quote-card {
+      border: 1px solid cyan;
+      margin: 10px auto;
+      padding: 15px;
+      width: 80%;
+      text-align: left;
+      border-radius: 12px;
+      box-shadow: 0 0 10px cyan;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .quote-text {
+      font-size: 16px;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tombol kembali -->
+  <button class="back-btn" onclick="window.history.back()">⬅ Kembali</button>
+
+  <h1>💬 Quotes Saver</h1>
+  <div class="input-container">
+    <input id="quoteInput" type="text" placeholder="Write your quote...">
+    <button onclick="saveQuote()">Save</button>
+  </div>
+  
+  <div id="quotesList"></div>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
+      authDomain: "index-68220.firebaseapp.com",
+      databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+      projectId: "index-68220",
+      storageBucket: "index-68220.firebasestorage.app",
+      messagingSenderId: "633087068802",
+      appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
+      measurementId: "G-2VQCRFJQCM"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function saveQuote() {
+      const quote = document.getElementById("quoteInput").value;
+      if (quote.trim() === "") return;
+      const newRef = db.ref("quotes").push();
+      newRef.set({ text: quote });
+      document.getElementById("quoteInput").value = "";
+    }
+
+    function deleteQuote(id) {
+      db.ref("quotes/" + id).remove();
+    }
+
+    db.ref("quotes").on("value", snapshot => {
+      const list = document.getElementById("quotesList");
+      list.innerHTML = "";
+      snapshot.forEach(child => {
+        const data = child.val();
+        const div = document.createElement("div");
+        div.className = "quote-card";
+        div.innerHTML = `
+          <div class="quote-text">${data.text}</div>
+          <button onclick="deleteQuote('${child.key}')">Delete</button>
+        `;
+        list.prepend(div);
+      });
+    });
+
+    // Enter to save
+    document.getElementById("quoteInput").addEventListener("keypress", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        saveQuote();
+      }
+    });
+
+    // Akses kontrol
+    (function(){
+      try {
+        const raw = sessionStorage.getItem('dashboard_access');
+        if (!raw) throw new Error("No access token");
+
+        const data = JSON.parse(raw);
+        if (!data.token) throw new Error("Invalid token");
+
+        console.log("Access granted:", data.token);
+      } catch (err) {
+        console.warn("Access denied:", err.message);
+        window.location.replace("index.html");
+      }
+    })();
+
+  // shortcut alt +Z → balik ke dashboard
+document.addEventListener("keydown", (e) => {
+  if (e.altKey && e.key.toLowerCase() === "z") {
+    e.preventDefault();
+    window.history.back(); // langsung kembali
+  }
+});
+
+  </script>
+</body>
+</html>

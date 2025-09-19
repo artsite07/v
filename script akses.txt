@@ -1,0 +1,18 @@
+(function(){
+  try {
+    // ambil data akses
+    const raw = sessionStorage.getItem('dashboard_access'); // atau localStorage kalau pakai itu
+    if (!raw) throw new Error("No access token");
+
+    const data = JSON.parse(raw);
+    if (!data.token) throw new Error("Invalid token");
+
+    // ✅ Token ada → akses diizinkan
+    console.log("Access granted:", data.token);
+
+  } catch (err) {
+    console.warn("Access denied:", err.message);
+    // arahkan balik ke dashboard
+    window.location.replace("index.html"); // ganti dengan nama file dashboard kamu
+  }
+})();

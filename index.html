@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Adlan Madjied Ridho</title>
+<link rel="icon" type="image/png" href="1.png">
+  <style>
+    :root{
+      --bg:#000;
+      --cyan:#00ffd9;
+      --muted-cyan:#3de7d0;
+      --glass: rgba(255,255,255,0.03);
+      --mono: 'Courier New', Courier, monospace;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--cyan);
+      font-family: var(--mono);
+      -webkit-font-smoothing:antialiased;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .card{
+      width:min(680px,92vw);
+      max-width:720px;
+      padding:36px 28px;
+      background:transparent;
+      text-align:center;
+    }
+    .welcome{
+      font-size:20px;
+      height:28px;
+      margin-bottom:20px;
+      white-space:nowrap;
+      overflow:hidden;
+      letter-spacing:1px;
+    }
+    .form-row{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      background:var(--glass);
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid rgba(0,255,217,0.08);
+      box-shadow: 0 6px 30px rgba(0,255,217,0.02) inset;
+    }
+    input[type="password"]{
+      background:transparent;
+      border: none;
+      outline: none;
+      color:var(--cyan);
+      font-size:18px;
+      width:320px;
+      min-width:120px;
+      caret-color:var(--muted-cyan);
+    }
+    button{
+      background: linear-gradient(180deg, rgba(0,255,217,0.06), rgba(0,255,217,0.02));
+      border:1px solid rgba(0,255,217,0.18);
+      color:var(--cyan);
+      padding:8px 14px;
+      font-family:var(--mono);
+      font-size:16px;
+      border-radius:8px;
+      cursor:pointer;
+    }
+    button:active{transform:translateY(1px)}
+    .status{
+      margin-top:18px;
+      font-size:14px;
+      opacity:0.9;
+    }
+    .hint{
+      margin-top:8px;
+      font-size:12px;
+      color:rgba(0,255,217,0.6);
+    }
+    @media (max-width:480px){
+      input[type="password"]{width:180px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="welcome" id="welcome"></div>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="form-row">
+        <input id="pw" type="password" placeholder="Enter password" aria-label="Password" required />
+        <button id="btnLogin" type="submit">Login</button>
+      </div>
+    </form>
+
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="hint">Press Enter to submit — design: semi hacker cyan</div>
+  </div>
+
+  <!-- Firebase JS (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
+      authDomain: "index-68220.firebaseapp.com",
+      databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+      projectId: "index-68220",
+      storageBucket: "index-68220.firebasestorage.app",
+      messagingSenderId: "633087068802",
+      appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
+      measurementId: "G-2VQCRFJQCM"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Decoy password (kept in code; not logged to console)
+    const decoyPassword = "A4521";
+    db.ref('decoy/password').set(decoyPassword).catch(()=>{});
+
+    // Elements
+    const form = document.getElementById('loginForm');
+    const pwInput = document.getElementById('pw');
+    const status = document.getElementById('status');
+
+    // Helper: compute SHA-256 hex of a string
+    async function sha256Hex(str){
+      const enc = new TextEncoder().encode(str);
+      const digest = await crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    // Decoy redirect targets (rotate on each decoy hit)
+    const decoyTargets = [
+      'https://example.com',
+      'https://www.wikipedia.org',
+      'https://www.github.com',
+      'https://www.mozilla.org',
+      'https://www.duckduckgo.com'
+    ];
+    const counterKey = 'decoyRedirectIndex';
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const val = pwInput.value || '';
+
+      // record attempt length only
+      db.ref('decoy/loginAttempts').push({ts: Date.now(), attempt: val.length + ' chars'}).catch(()=>{});
+
+      // If decoy used -> rotate and redirect after brief feedback
+      if(val === decoyPassword){
+        // record decoy usage
+        db.ref('decoy/fakeSuccesses').push({ts: Date.now(), note: 'decoy used'}).catch(()=>{});
+
+        // direct decoy redirect to prank site
+        const target = 'https://pranx.com/hacker/';
+
+        status.textContent = 'Redirecting...';
+        setTimeout(()=>{
+          window.location.href = target;
+        }, 2000);
+
+        pwInput.value = '';
+        pwInput.focus();
+        return;
+      }
+
+      // Otherwise check stored hash in RTDB
+      try{
+        const snap = await db.ref('real/passwordHash').get();
+        if(snap.exists()){
+          const storedHash = snap.val();
+          const attemptHash = await sha256Hex(val);
+          if(attemptHash === storedHash){
+            // grant access: set a session marker and redirect to beranda
+            sessionStorage.setItem('auth', Date.now().toString());
+            status.textContent = 'Access granted. Redirecting...';
+            setTimeout(()=>{ window.location.href = 'beranda.html'; }, 600);
+          } else {
+            status.textContent = 'Incorrect password. Try again.';
+          }
+        } else {
+          status.textContent = 'No password set. Please set a password first.';
+        }
+      }catch(err){
+        // keep console clean for decoy; still log real errors for debugging
+        console.error(err);
+        status.textContent = 'Error checking password. See console.';
+      }
+
+      pwInput.value = '';
+      pwInput.focus();
+    });
+
+    // Typing animation for welcome texts
+    const welcomeEl = document.getElementById('welcome');
+    const texts = [
+      'Welcome.',
+      'Enter your password to continue.',
+      'Restricted access — check your permissions.'
+    ];
+    let tIdx = 0;
+    function typeLine(line, cb){
+      let i = 0;
+      welcomeEl.textContent = '';
+      const iv = setInterval(()=>{
+        welcomeEl.textContent += line[i++] || '';
+        if(i > line.length){
+          clearInterval(iv);
+          setTimeout(()=> cb && cb(), 800);
+        }
+      }, 40);
+    }
+    function loopWelcome(){
+      typeLine(texts[tIdx], ()=>{
+        let k = texts[tIdx].length;
+        const del = setInterval(()=>{
+          welcomeEl.textContent = welcomeEl.textContent.slice(0, -1);
+          k--;
+          if(k <= 0){
+            clearInterval(del);
+            tIdx = (tIdx+1) % texts.length;
+            setTimeout(loopWelcome, 400);
+          }
+        }, 20);
+      });
+    }
+    document.addEventListener('DOMContentLoaded', ()=>{
+      loopWelcome();
+      pwInput.focus();
+    });
+  </script>
+</body>
+</html>

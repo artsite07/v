@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Adlan Madjied Ridho</title>
+<link rel="icon" href="1.png" />
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+  :root{
+    --bg:#000;
+    --cyan:#00fff7;
+    --subcyan:#7fffd4;
+    --header-h:72px;
+    --sidebar-w:280px;
+    --gap:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--cyan);font-family:"Courier New",monospace;overflow:hidden}
+
+  /* header */
+  header{
+    height:var(--header-h);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.95);
+    border-bottom:1px solid rgba(127,255,212,0.08);
+    z-index:10;
+  }
+  .quote {
+    font-size:1.9rem;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:90vw;
+    border-right:.12em solid var(--subcyan);
+    text-shadow:0 0 10px rgba(0,255,247,0.08);
+    animation:caret 0.8s steps(1) infinite;
+  }
+  @keyframes caret{50%{border-color:transparent}}
+
+  /* layout */
+  .frame {
+    display:grid;
+    grid-template-columns: var(--sidebar-w) 1fr;
+    height:calc(100% - var(--header-h));
+    gap:var(--gap);
+    padding:var(--gap);
+    min-width:0;
+  }
+
+  /* Left sidebar */
+  .left {
+    background:#050505;
+    border:1px solid rgba(0,255,247,0.06);
+    border-radius:8px;
+    padding:10px;
+    overflow-y:auto;
+    min-width:0;
+  }
+  .left::-webkit-scrollbar{display:none}
+  .left { -ms-overflow-style: none; scrollbar-width: none; }
+  .left h2{margin:4px 0 10px;font-size:1rem;text-shadow:0 0 6px var(--subcyan)}
+  .plan {
+    background:#0b0b0b;
+    border:1px solid rgba(0,255,247,0.06);
+    padding:8px;margin-bottom:8px;border-radius:6px;display:flex;justify-content:space-between;align-items:center;
+    font-size:0.9rem;
+    min-width:0;
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+  .plan button{background:transparent;color:var(--cyan);border:1px solid rgba(0,255,247,0.06);padding:6px;border-radius:4px;cursor:pointer}
+  .plan button:hover{background:var(--cyan);color:#000}
+
+  /* Center column */
+  .center {
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    position:relative;
+    overflow:hidden;
+    min-width:0;
+  }
+  .clock-wrap {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:110px;
+  }
+  .clock {
+    font-size:4.2rem;
+    font-weight:700;
+    text-shadow:0 0 28px rgba(0,255,247,0.18);
+    line-height:1;
+  }
+
+  /* main area */
+  .main-area {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap:12px;
+    height: calc(100% - 110px - 12px);
+    min-height: 0;
+    min-width:0;
+  }
+
+  .hacker-screen {
+    background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.8));
+    border:1px solid rgba(0,255,247,0.06);
+    border-radius:8px;
+    padding:16px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-family: "Courier New", monospace;
+    font-size:20px;
+    line-height:1.4;
+    color: var(--subcyan);
+    box-shadow: 0 0 12px rgba(0,255,247,0.04) inset;
+    min-width:0;
+    max-width:100%;
+  }
+  .hacker-screen::-webkit-scrollbar{height:10px;width:10px; display:none;}
+  .hacker-screen { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .notifications {
+    background: #050505;
+    border: 1px solid rgba(0,255,247,0.08);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+    color: var(--cyan);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow-y: auto;
+    min-width:0;
+  }
+  .notifications::-webkit-scrollbar{ display:none; }
+  .notifications { -ms-overflow-style: none; scrollbar-width: none; }
+  .notifications h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    text-align: center;
+    text-shadow: 0 0 6px var(--subcyan);
+  }
+  .notif {
+    padding: 12px 14px;
+    border: 1px solid rgba(0,255,247,0.12);
+    border-radius: 8px;
+    background: #000;
+    color: var(--subcyan);
+    animation: notifIn .22s ease;
+    word-break: break-word;
+    overflow-wrap:anywhere;
+    box-shadow: 0 0 18px rgba(0,255,247,0.03);
+    transform-origin: top left;
+  }
+  @keyframes notifIn {
+    from {opacity:0; transform: translateY(6px) scale(0.995);}
+    to {opacity:1; transform: translateY(0) scale(1);}
+  }
+  .notif.fade-out {
+    opacity: 0;
+    transform: translateY(120vh);
+    transition: transform 1s ease, opacity .9s ease;
+  }
+
+  /* Right sidebar */
+  .right {
+    position:fixed;
+    top:var(--header-h);
+    right:0;
+    width:var(--sidebar-w);
+    height:calc(100% - var(--header-h));
+    background:#050505;
+    border-left:1px solid rgba(0,255,247,0.06);
+    padding:12px;
+    overflow-y:auto;
+    transform:translateX(100%);
+    transition:transform .25s ease;
+    z-index:20;
+    border-radius: 8px 0 0 8px;
+    min-width:0;
+  }
+  .right.open { transform:translateX(0); }
+  .right::-webkit-scrollbar{display:none}
+  .right { -ms-overflow-style: none; scrollbar-width: none; }
+  .right h2{margin:6px 0 10px;font-size:1rem;text-shadow:0 0 6px var(--subcyan)}
+  .navlist, .shortcuts { list-style:none;padding:0;margin:0 0 12px 0; }
+  .navlist li a, .shortcuts li a {
+    color:var(--subcyan); text-decoration:none; display:block;
+    padding:8px 6px; border:1px solid rgba(0,255,247,0.12);
+    border-radius:6px; margin-bottom:8px;
+    overflow-wrap:anywhere;
+    word-break:break-word;
+    max-width:100%;
+  }
+  .navlist li a:hover, .shortcuts li a:hover {
+    color:var(--cyan); background:rgba(0,255,247,0.03)
+  }
+
+  * { min-width: 0; }
+</style>
+</head>
+<body>
+  <header><div id="quote" class="quote">Welcome</div></header>
+
+  <div class="frame">
+    <aside class="left">
+      <h2>Plans</h2>
+      <div id="plansContainer"></div>
+    </aside>
+
+    <section class="center">
+      <div class="clock-wrap"><div id="clock" class="clock"></div></div>
+      <div class="main-area">
+        <div id="hackerScreen" class="hacker-screen" aria-live="polite" role="log"></div>
+        <div class="notifications" id="notifBox"><h3>Notifications</h3><div id="notifList"></div></div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="right" id="rightSidebar">
+    <h2>Navigation</h2>
+    <ul class="navlist" id="navList"><li style="opacity:.6">V</li></ul>
+    <h2>Shortcuts</h2>
+    <ul class="shortcuts" id="shortcutsList"><li style="opacity:.6">V</li></ul>
+  </aside>
+
+<script>
+  /* Firebase config */
+  const firebaseConfig = {
+    apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
+    authDomain: "index-68220.firebaseapp.com",
+    databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+    projectId: "index-68220",
+    storageBucket: "index-68220.firebasestorage.app",
+    messagingSenderId: "633087068802",
+    appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
+    measurementId: "G-2VQCRFJQCM"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function escapeHTML(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+  const hackerEl = document.getElementById("hackerScreen");
+  let snippets = [], idx = 0, ci = 0;
+  const TYPING_SPEED_MS = 1;
+
+  db.ref("snippets").on("value", snap => {
+    const data = snap.val();
+    snippets = data ? Object.values(data).map(s => (typeof s === "string" ? s : (s && s.text) || "")) : [];
+    if (idx >= snippets.length) { idx = 0; ci = 0; }
+  });
+
+  function scrollFollowChar() {
+    hackerEl.scrollLeft = 0;
+    hackerEl.scrollTop = hackerEl.scrollHeight;
+  }
+
+function typeLoop(){
+  if (snippets.length === 0) return setTimeout(typeLoop, 200);
+  const snippet = snippets[idx] || "";
+
+  if (snippet.length === 0) {
+    idx = (idx + 1) % snippets.length;
+    ci = 0;
+    hackerEl.scrollLeft = 0;
+    return setTimeout(typeLoop, TYPING_SPEED_MS  = 1);
+  }
+
+  // karakter per tick
+  const CHARS_PER_TICK = 10000; 
+
+  if (ci < snippet.length) {
+    const take = Math.min(CHARS_PER_TICK, snippet.length - ci);
+    hackerEl.textContent += snippet.substr(ci, take);
+    ci += take;
+    scrollFollowChar();
+    setTimeout(typeLoop, TYPING_SPEED_MS);
+  } else {
+    idx = (idx + 1) % snippets.length;
+    ci = 0;
+    hackerEl.scrollLeft = 0;
+    setTimeout(typeLoop, TYPING_SPEED_MS);
+  }
+}
+typeLoop();
+
+
+  const quoteEl = document.getElementById('quote');
+  let quotesArr = [], qidx = -1;
+  const QUOTE_SPEED = 100;
+  function typeText(t, cb){
+    quoteEl.textContent = '';
+    let i = 0;
+    const iv = setInterval(()=> {
+      if (i < t.length) quoteEl.textContent += t[i++]; else { clearInterval(iv); if (cb) cb(); }
+    }, QUOTE_SPEED);
+  }
+  function delText(cb){
+    let i = quoteEl.textContent.length;
+    const iv = setInterval(()=> {
+      if (i > 0) { quoteEl.textContent = quoteEl.textContent.slice(0, -1); i--; }
+      else { clearInterval(iv); if(cb) cb(); }
+    }, Math.max(6, Math.floor(QUOTE_SPEED/2)));
+  }
+  function cycleQuotes(){
+    if (!quotesArr.length) return;
+    let ni;
+    do { ni = Math.floor(Math.random() * quotesArr.length); }
+    while (ni === qidx && quotesArr.length > 1);
+    qidx = ni;
+    typeText(quotesArr[qidx], ()=> {
+      setTimeout(()=>{ delText(()=> setTimeout(cycleQuotes, 500)); }, 7000);
+    });
+  }
+  db.ref('quotes').once('value').then(snapshot => {
+    quotesArr = [];
+    snapshot.forEach(c => { if (c.val() && c.val().text) quotesArr.push(c.val().text); });
+    if (quotesArr.length) cycleQuotes();
+  }).catch(()=> { quoteEl.textContent = "Welcome"; });
+
+  const plansContainer = document.getElementById('plansContainer');
+  db.ref('plans').on('child_added', snap => {
+    const d = snap.val();
+    const row = document.createElement('div');
+    row.className = 'plan';
+    row.id = 'plan-' + snap.key;
+    row.innerHTML = `<div style="flex:1; min-width:0; overflow-wrap:anywhere; word-break:break-word">${escapeHTML(d.text || '')}</div>
+                     <button onclick="db.ref('plans/${snap.key}').remove()">Done</button>`;
+    plansContainer.appendChild(row);
+  });
+  db.ref('plans').on('child_removed', snap => {
+    const el = document.getElementById('plan-' + snap.key);
+    if (el) el.remove();
+  });
+
+  const shortcutsList = document.getElementById('shortcutsList');
+  db.ref('shortcuts').on('value', snap => {
+    shortcutsList.innerHTML = '';
+    if (!snap.exists()) { shortcutsList.innerHTML = '<li style="opacity:.6">No shortcuts</li>'; return; }
+    snap.forEach(child => {
+      const d = child.val();
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="${d.link}" target="_blank">${escapeHTML(d.name || '')}</a>`;
+      shortcutsList.appendChild(li);
+    });
+  });
+
+  const navList = document.getElementById('navList');
+  db.ref('navigation').on('value', snap => {
+    navList.innerHTML = '';
+    if (!snap.exists()) { navList.innerHTML = '<li style="opacity:.6">No navigation</li>'; return; }
+    snap.forEach(child => {
+      const d = child.val();
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.textContent = d.name || '';
+      a.href = d.link || '#';
+
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        try {
+          const accessData = { token: Math.random().toString(36).slice(2), time: Date.now() };
+          sessionStorage.setItem('dashboard_access', JSON.stringify(accessData));
+        } catch (err) { console.warn('sessionStorage unavailable', err); }
+        window.location.assign(a.href);
+      });
+
+      li.appendChild(a);
+      navList.appendChild(li);
+    });
+  });
+
+  const clockEl = document.getElementById('clock');
+  function tick(){ clockEl.textContent = new Date().toLocaleTimeString('en-GB', { hour12: false }); }
+  setInterval(tick, 1000); tick();
+
+  const rightSidebar = document.getElementById('rightSidebar');
+  document.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    rightSidebar.classList.toggle('open');
+  });
+  document.addEventListener('click', e => {
+    if (rightSidebar.classList.contains('open') && !rightSidebar.contains(e.target)) {
+      rightSidebar.classList.remove('open');
+    }
+  });
+
+  const notifListEl = document.getElementById('notifList');
+  let notifPool = [];
+  db.ref("notifications").on("value", snap => {
+    const data = snap.val();
+    notifPool = data ? Object.values(data).map(n => (typeof n === "string" ? n : (n && n.text) || "")) : [];
+  });
+
+  function spawnNotif() {
+    if (notifPool.length === 0) { scheduleNextNotif(); return; }
+    const msg = notifPool[Math.floor(Math.random() * notifPool.length)];
+    const div = document.createElement('div');
+    div.className = 'notif';
+    div.textContent = msg;
+    notifListEl.prepend(div);
+
+    const MAX_VISIBLE = 10;
+    while (notifListEl.childElementCount > MAX_VISIBLE) notifListEl.removeChild(notifListEl.lastChild);
+
+    const lifetime = Math.random() * 4000 + 8000;
+    setTimeout(() => {
+      div.classList.add('fade-out');
+      setTimeout(() => { if (div.parentNode) div.remove(); }, 1100);
+    }, lifetime);
+
+    scheduleNextNotif();
+  }
+  function scheduleNextNotif(){ setTimeout(spawnNotif, Math.random() * 5300 + 1200); }
+  scheduleNextNotif();
+
+if (!sessionStorage.getItem('auth')) {
+    window.location.href = "index.html";
+  }
+</script>
+</body>
+</html>

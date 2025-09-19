@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Adlan Madjied Ridho</title>
+  <link rel="icon" type="image/png" href="1.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    :root {
+      --bg: #000;
+      --cyan: cyan;
+      --subcyan: #7fffd4;
+      --panel-w: 300px;
+    }
+    html,body{height:100%;margin:0;font-family:monospace;background:var(--bg);color:var(--cyan);}
+    .app { display:flex; height:100vh; overflow:hidden; }
+
+    /* Tombol kembali */
+    #backBtn {
+      position:fixed;
+      top:12px;
+      left:12px;
+      background:#000;
+      border:1px solid var(--cyan);
+      color:var(--cyan);
+      padding:6px 12px;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:14px;
+      text-shadow:0 0 6px rgba(0,255,255,0.5);
+      z-index:1100;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--panel-w);
+      min-width: var(--panel-w);
+      background: #050505;
+      border-right: 1px solid var(--cyan);
+      box-shadow: 0 0 20px rgba(0,255,255,0.03);
+      padding: 16px;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .brand { font-size:18px; margin-bottom:10px; text-shadow:0 0 10px var(--cyan); }
+    .add-page { display:flex; gap:8px; margin-bottom:12px; }
+    .add-page input {
+      flex:1; padding:8px; background:transparent; border:1px solid var(--cyan);
+      color:var(--cyan); border-radius:6px;
+    }
+    .add-page button {
+      padding:8px 10px; background:transparent; border:1px solid var(--cyan);
+      color:var(--cyan); border-radius:6px; cursor:pointer;
+    }
+    .add-page button:hover { background:var(--cyan); color:#000; }
+    .sidebar-item {
+      padding:8px; border-radius:8px; cursor:pointer;
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:6px; border:1px solid transparent;
+    }
+    .sidebar-item:hover { background:rgba(0,255,255,0.02); }
+    .sidebar-item.active {
+      background:rgba(0,255,255,0.06);
+      border:1px solid var(--cyan);
+    }
+    .sidebar-item .name { font-size:14px; flex:1; }
+    .sidebar-item .delete-btn {
+      background:transparent; border:none; color:var(--subcyan); cursor:pointer;
+      font-size:14px;
+    }
+    .sidebar-item .delete-btn:hover { color:red; }
+
+    /* Main content */
+    .main { flex:1; padding:20px; overflow:auto; }
+    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .title { font-size:20px; text-shadow:0 0 12px var(--cyan); }
+
+    .input-area { max-width:900px; margin-bottom:12px; display:flex; flex-direction:column; gap:8px; }
+    .input-area input,.input-area textarea {
+      padding:10px; background:transparent; border:1px solid var(--cyan);
+      color:var(--cyan); border-radius:8px; font-family:monospace;
+    }
+    .save-btn {
+      width:100px; padding:8px; background:transparent; border:1px solid var(--cyan);
+      color:var(--cyan); border-radius:8px; cursor:pointer;
+    }
+    .save-btn:hover { background:var(--cyan); color:#000; }
+
+    .keeps { display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+    .keep-card {
+      border:1px solid var(--cyan); border-radius:12px; padding:14px;
+      max-width:900px; display:flex; justify-content:space-between; gap:12px;
+    }
+    .keep-title { font-weight:bold; margin-bottom:6px; cursor:pointer; }
+    .keep-text { white-space:pre-wrap; cursor:pointer; }
+    .keep-text a { color:var(--subcyan); }
+    .keep-delete-btn {
+      background:transparent; border:none; color:var(--subcyan); cursor:pointer;
+      font-size:14px; height:fit-content;
+    }
+    .keep-delete-btn:hover { color:red; }
+
+    /* Popup */
+    .popup-overlay {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center;
+      z-index:1000; display:none;
+    }
+    .popup {
+      background:#111; border:1px solid var(--cyan); border-radius:12px;
+      padding:20px; max-width:300px; text-align:center;
+      box-shadow:0 0 15px rgba(0,255,255,0.3);
+    }
+    .popup p { margin-bottom:16px; }
+    .popup button {
+      margin:0 6px; padding:8px 14px; border:1px solid var(--cyan);
+      background:transparent; color:var(--cyan); border-radius:6px; cursor:pointer;
+    }
+    .popup button:hover { background:var(--cyan); color:#000; }
+
+    [contenteditable="true"] { outline:none; box-shadow:0 0 10px rgba(0,255,255,0.2); }
+  </style>
+</head>
+<body>
+  <!-- Tombol kembali -->
+  <button id="backBtn" onclick="window.history.back()">⬅ Kembali</button>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">Keeps</div>
+      <div class="add-page">
+        <input id="pageInput" placeholder="Add page..." />
+        <button id="addPageBtn">Add</button>
+      </div>
+      <div id="item-home" class="sidebar-item" data-slug="home">
+        <div class="name">home page</div>
+      </div>
+      <div id="pagesList"></div>
+    </aside>
+
+    <main class="main">
+      <div class="header">
+        <div class="title" id="pageTitle">home page</div>
+      </div>
+      <div class="input-area">
+        <input id="titleInput" placeholder="Optional title..." />
+        <textarea id="keepInput" placeholder="Write your note..."></textarea>
+        <button class="save-btn" id="saveBtn">Save</button>
+      </div>
+      <div class="keeps" id="keepsContainer"></div>
+    </main>
+  </div>
+
+  <!-- Popup -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+      <p id="popupMessage">Are you sure?</p>
+      <button id="confirmDelete">Delete</button>
+      <button id="cancelDelete">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
+      authDomain: "index-68220.firebaseapp.com",
+      databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+      projectId: "index-68220",
+      storageBucket: "index-68220.firebasestorage.app",
+      messagingSenderId: "633087068802",
+      appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
+      measurementId: "G-2VQCRFJQCM"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let currentPage = "home";
+    let deleteTarget = null;
+
+    const pageInput = document.getElementById("pageInput");
+    const addPageBtn = document.getElementById("addPageBtn");
+    const pagesList = document.getElementById("pagesList");
+    const pageTitle = document.getElementById("pageTitle");
+    const keepsContainer = document.getElementById("keepsContainer");
+    const titleInput = document.getElementById("titleInput");
+    const keepInput = document.getElementById("keepInput");
+
+    // popup
+    const popupOverlay = document.getElementById("popupOverlay");
+    const popupMessage = document.getElementById("popupMessage");
+    const confirmDelete = document.getElementById("confirmDelete");
+    const cancelDelete = document.getElementById("cancelDelete");
+
+    function slugify(name){ return name.toLowerCase().replace(/\s+/g,'-'); }
+    function escapeHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+    function linkify(t){ return escapeHtml(t).replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>').replace(/\n/g,'<br>'); }
+
+    // pages
+    function loadPages(){
+      db.ref("pages").on("value", snap=>{
+        pagesList.innerHTML="";
+        const val = snap.val()||{};
+        Object.keys(val).forEach(slug=>{
+          const div=document.createElement("div");
+          div.className="sidebar-item";
+          div.dataset.slug=slug;
+          div.innerHTML=`
+            <div class="name" ondblclick="renamePage(this,'${slug}')">${escapeHtml(val[slug].name)}</div>
+            <button class="delete-btn" onclick="askDelete('page','${slug}',null,'${escapeHtml(val[slug].name)}')">🗑</button>`;
+          div.addEventListener("click",e=>{
+            if(e.target.classList.contains("delete-btn")) return;
+            setPage(slug,val[slug].name);
+          });
+          pagesList.appendChild(div);
+        });
+      });
+    }
+
+    // add page
+    function addPage(){
+      const name=pageInput.value.trim();
+      if(!name) return;
+      const slug=slugify(name);
+      db.ref("pages/"+slug).set({name});
+      pageInput.value="";
+    }
+    addPageBtn.onclick=addPage;
+    pageInput.addEventListener("keydown",e=>{
+      if(e.key==="Enter"){e.preventDefault();addPage();}
+    });
+
+    // set page
+    function setPage(slug,name){
+      currentPage=slug;
+      pageTitle.textContent=name;
+      loadKeeps();
+    }
+
+    // keeps
+    document.getElementById("saveBtn").onclick=saveKeep;
+    titleInput.addEventListener("keydown",e=>{
+      if(e.key==="Enter"){e.preventDefault();saveKeep();}
+    });
+    keepInput.addEventListener("keydown",e=>{
+      if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();saveKeep();}
+    });
+
+    function saveKeep(){
+      const title=titleInput.value.trim();
+      const text=keepInput.value.trim();
+      if(!title&&!text) return;
+      db.ref("keeps/"+currentPage).push({title,text});
+      titleInput.value="";keepInput.value="";
+    }
+
+    function loadKeeps(){
+      db.ref("keeps/"+currentPage).on("value",snap=>{
+        keepsContainer.innerHTML="";
+        const val=snap.val()||{};
+        Object.entries(val).reverse().forEach(([id,data])=>{
+          const card=document.createElement("div");
+          card.className="keep-card";
+          card.innerHTML=`
+            <div>
+              <div class="keep-title" ondblclick="editKeep(this,'${id}','title')">${escapeHtml(data.title||"")}</div>
+              <div class="keep-text" ondblclick="editKeep(this,'${id}','text')">${linkify(data.text||"")}</div>
+            </div>
+            <button class="keep-delete-btn" onclick="askDelete('note','${currentPage}','${id}','${escapeHtml(data.title||'Note')}')">🗑</button>`;
+          keepsContainer.appendChild(card);
+        });
+      });
+    }
+
+    // edit keep
+    function editKeep(el,id,field){
+      el.setAttribute("contenteditable","true");el.focus();
+      el.onkeydown=function(e){
+        if(e.key==="Enter"&&!e.shiftKey){
+          e.preventDefault();
+          el.removeAttribute("contenteditable");
+          saveChange(id,field,el.innerText.trim());
+        }
+      };
+      el.onblur=function(){
+        el.removeAttribute("contenteditable");
+        saveChange(id,field,el.innerText.trim());
+      };
+    }
+    function saveChange(id,field,val){
+      db.ref("keeps/"+currentPage+"/"+id).once("value").then(s=>{
+        const old=s.val()||{};
+        const upd={title:field==="title"?val:(old.title||""),text:field==="text"?val:(old.text||"")};
+        db.ref("keeps/"+currentPage+"/"+id).update(upd);
+      });
+    }
+
+    // rename page
+    function renamePage(el,slug){
+      el.setAttribute("contenteditable","true");el.focus();
+      el.onkeydown=function(e){
+        if(e.key==="Enter"){e.preventDefault();el.blur();}
+      };
+      el.onblur=function(){
+        el.removeAttribute("contenteditable");
+        const val=el.innerText.trim();
+        if(val) db.ref("pages/"+slug+"/name").set(val);
+      };
+    }
+
+// Allow Enter key to confirm delete popup
+document.addEventListener("keydown", e => {
+  if (popupOverlay.style.display === "flex" && e.key === "Enter") {
+    e.preventDefault();
+    confirmDelete.click();
+  }
+});
+
+// Shortcut alt + z untuk kembali
+document.addEventListener("keydown", e => {
+  if (e.altKey && e.key.toLowerCase() === "z") {
+    e.preventDefault();
+    window.history.back();
+  }
+});
+
+// start
+document.getElementById("item-home").onclick = () => setPage("home", "home page");
+setPage("home", "home page");
+loadPages();
+
+// proteksi token
+(function(){
+  try {
+    const raw = sessionStorage.getItem('dashboard_access');
+    if (!raw) throw new Error("No access token");
+    const data = JSON.parse(raw);
+    if (!data.token) throw new Error("Invalid token");
+    console.log("Access granted:", data.token);
+  } catch (err) {
+    console.warn("Access denied:", err.message);
+    window.location.replace("index.html");
+  }
+})();
+
+  </script>
+</body>
+</html>
