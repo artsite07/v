@@ -45,12 +45,6 @@
       background: cyan;
       color: #000;
     }
-    .back-btn {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      z-index: 1000;
-    }
     .shortcut-card {
       border: 1px solid cyan;
       margin: 10px auto;
@@ -84,9 +78,6 @@
   </style>
 </head>
 <body>
-  <!-- Tombol kembali -->
-  <button class="back-btn" onclick="window.history.back()">⬅ Kembali</button>
-
   <h1>🔗 Shortcuts Saver</h1>
 
   <div class="input-container">
@@ -175,15 +166,6 @@
         window.location.replace("index.html");
       }
     })();
-
-    // Tambah shortcut alt + z untuk kembali
-document.addEventListener("keydown", (e) => {
-  if (e.altKey && e.key.toLowerCase() === "z") {
-    e.preventDefault();
-    window.history.back();
-  }
-});
-
   </script>
 </body>
 </html>
