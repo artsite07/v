@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <title>Adlan Madjied Ridho</title>
-<link rel="icon" type="image/png" href="1.png">
+  <link rel="icon" type="image/png" href="1.png">
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -20,83 +21,232 @@
       --subcyan: #7fffd4;
       --sidebar: #050505;
     }
-    html,body { margin:0; height:100%; background:var(--bg); color:var(--cyan); font-family:monospace; }
-    .app { display:flex; height:100vh; }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--cyan);
+      font-family: monospace;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+    }
 
     /* Sidebar */
     .sidebar {
-      width:280px; background:var(--sidebar); border-right:1px solid var(--cyan);
-      padding:10px; box-sizing:border-box; overflow:auto;
+      width: 280px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--cyan);
+      padding: 10px;
+      box-sizing: border-box;
+      overflow: auto;
     }
-    .brand { font-size:18px; margin-bottom:10px; text-shadow:0 0 10px var(--cyan); }
-    .add-buttons { display:flex; gap:6px; margin-bottom:10px; }
-    .add-buttons button {
-      flex:1; padding:6px; background:transparent; border:1px solid var(--cyan);
-      border-radius:6px; color:var(--cyan); cursor:pointer;
-    }
-    .add-buttons button:hover { background:var(--cyan); color:#000; }
 
-    .tree { font-size:14px; }
-    .item { padding:4px 0 4px 10px; display:flex; align-items:center; gap:6px; cursor:pointer; }
-    .item:hover { background:rgba(0,255,255,0.05); }
-    .item .name { flex:1; user-select: none; /* prevent browser autofill highlight */ }
-    .item button {
-      background:transparent; border:none; color:var(--subcyan); cursor:pointer; font-size:14px;
+    .brand {
+      font-size: 18px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px var(--cyan);
     }
-    .item button:hover { color:red; }
-    .children { margin-left:16px; overflow:auto; }
+
+    .add-buttons {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .add-buttons button {
+      flex: 1;
+      padding: 6px;
+      background: transparent;
+      border: 1px solid var(--cyan);
+      border-radius: 6px;
+      color: var(--cyan);
+      cursor: pointer;
+    }
+
+    .add-buttons button:hover {
+      background: var(--cyan);
+      color: #000;
+    }
+
+    .tree {
+      font-size: 14px;
+    }
+
+    .item {
+      padding: 4px 0 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .item:hover {
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    .item .name {
+      flex: 1;
+      user-select: none;
+      /* prevent browser autofill highlight */
+    }
+
+    .item button {
+      background: transparent;
+      border: none;
+      color: var(--subcyan);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .item button:hover {
+      color: red;
+    }
+
+    .children {
+      margin-left: 16px;
+      overflow: auto;
+    }
 
     .add-file-btn {
-      display:block; margin:4px 0 6px 20px; padding:2px 6px;
-      background:transparent; border:1px solid var(--cyan); border-radius:4px;
-      color:var(--cyan); cursor:pointer; font-size:12px;
+      display: block;
+      margin: 4px 0 6px 20px;
+      padding: 2px 6px;
+      background: transparent;
+      border: 1px solid var(--cyan);
+      border-radius: 4px;
+      color: var(--cyan);
+      cursor: pointer;
+      font-size: 12px;
     }
-    .add-file-btn:hover { background:var(--cyan); color:#000; }
+
+    .add-file-btn:hover {
+      background: var(--cyan);
+      color: #000;
+    }
 
     /* Main editor */
-    .main { flex:1; display:flex; flex-direction:column; }
-    .header { padding:10px; border-bottom:1px solid var(--cyan); display:flex; justify-content:space-between; }
-    .filename { font-weight:bold; }
-    .editor { flex:1; display:flex; flex-direction:column; overflow:auto; }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      padding: 10px;
+      border-bottom: 1px solid var(--cyan);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .filename {
+      font-weight: bold;
+    }
+
+    .editor {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+
     .editor textarea {
-      flex:1; background:#111; color:var(--cyan); border:none; padding:12px;
-      font-family:monospace; font-size:14px; outline:none; resize:none; white-space:pre;
-      overflow:auto;
+      flex: 1;
+      background: #111;
+      color: var(--cyan);
+      border: none;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 14px;
+      outline: none;
+      resize: none;
+      white-space: pre;
+      overflow: auto;
     }
+
     .save-btn {
-      padding:8px 14px; background:transparent; border:1px solid var(--cyan);
-      color:var(--cyan); cursor:pointer; border-radius:8px; margin:10px;
-      align-self:flex-start;
+      padding: 8px 14px;
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      cursor: pointer;
+      border-radius: 8px;
+      margin: 10px;
+      align-self: flex-start;
     }
-    .save-btn:hover { background:var(--cyan); color:#000; }
+
+    .save-btn:hover {
+      background: var(--cyan);
+      color: #000;
+    }
 
     /* Popup confirm */
     .popup-overlay {
-      position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center;
-      z-index:1000; display:none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      display: none;
     }
+
     .popup {
-      background:#111; border:1px solid var(--cyan); border-radius:12px;
-      padding:20px; max-width:300px; text-align:center;
-      box-shadow:0 0 15px rgba(0,255,255,0.3);
+      background: #111;
+      border: 1px solid var(--cyan);
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 300px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
     }
-    .popup p { margin-bottom:16px; }
+
+    .popup p {
+      margin-bottom: 16px;
+    }
+
     .popup button {
-      margin:0 6px; padding:8px 14px; border:1px solid var(--cyan);
-      background:transparent; color:var(--cyan); border-radius:6px; cursor:pointer;
+      margin: 0 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--cyan);
+      background: transparent;
+      color: var(--cyan);
+      border-radius: 6px;
+      cursor: pointer;
     }
-    .popup button:hover { background:var(--cyan); color:#000; }
+
+    .popup button:hover {
+      background: var(--cyan);
+      color: #000;
+    }
 
     /* Toast */
     .toast {
-      position:fixed; bottom:20px; right:20px;
-      background:#111; border:1px solid var(--cyan); color:var(--cyan);
-      padding:8px 12px; border-radius:8px; box-shadow:0 0 12px rgba(0,255,255,0.3);
-      display:none; z-index:2000;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #111;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 8px 12px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+      display: none;
+      z-index: 2000;
     }
 
-    [contenteditable="true"] { outline:none; box-shadow:0 0 10px rgba(0,255,255,0.3); }
+    [contenteditable="true"] {
+      outline: none;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
 
     /* -------------------------------
        Hide scrollbars visually but keep scrolling working
@@ -110,34 +260,22 @@
       height: 0px;
       display: none;
     }
-    .sidebar, .children, .editor textarea, .editor {
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;     /* Firefox */
-    }
 
-#backBtn {
-    position:fixed;
-    top:10px;
-    left:10px;
-    background:#000;
-    border:1px solid #00fff7;
-    color:#00fff7;
-    padding:6px 12px;
-    border-radius:6px;
-    cursor:pointer;
-    font-family:"Courier New", monospace;
-    font-size:14px;
-    z-index:9999;
-  }
-  #backBtn:hover {
-    background:#001818;
-  }
+    .sidebar,
+    .children,
+    .editor textarea,
+    .editor {
+      -ms-overflow-style: none;
+      /* IE and Edge */
+      scrollbar-width: none;
+      /* Firefox */
+    }
   </style>
 </head>
+
 <body>
   <div class="app">
     <aside class="sidebar">
-<button id="backBtn">⮌ Kembali</button>
       <div class="brand">Explorer</div>
       <div class="add-buttons">
         <button id="addFolderBtn" type="button">+ Folder</button>
@@ -150,9 +288,7 @@
       </div>
       <div class="editor">
         <!-- disable spellcheck/autocorrect/autocomplete behaviors -->
-        <textarea id="codeArea" placeholder="Select a file to edit..."
-          spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
-          aria-label="Code editor" disabled></textarea>
+        <textarea id="codeArea" placeholder="Select a file to edit..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Code editor" disabled></textarea>
         <button class="save-btn" id="saveBtn" type="button" disabled>Save</button>
       </div>
     </main>
@@ -195,13 +331,13 @@
     const popupYes = document.getElementById("popupYes");
     const popupNo = document.getElementById("popupNo");
 
-    let currentFilePath = null;   // e.g. "/<folderId>/children/<fileId>"
-    let currentFileName = null;   // e.g. "index.html"
+    let currentFilePath = null; // e.g. "/<folderId>/children/<fileId>"
+    let currentFileName = null; // e.g. "index.html"
     let popupAction = null;
     const expandedFolders = {};
 
     // Render tree from plain object (explorer root value)
-    function renderTree(obj, parentEl, path="") {
+    function renderTree(obj, parentEl, path = "") {
       parentEl.innerHTML = "";
       for (const key in obj) {
         const data = obj[key];
@@ -250,7 +386,9 @@
               nameEl.contentEditable = "false";
             }
           };
-          nameEl.onblur = () => { nameEl.contentEditable = "false"; };
+          nameEl.onblur = () => {
+            nameEl.contentEditable = "false";
+          };
 
           itemEl.appendChild(nameEl);
           itemEl.appendChild(makeDeleteBtn(folderKeyPath, data));
@@ -267,7 +405,11 @@
           addFileBtn.textContent = "+ File";
           addFileBtn.onclick = (e) => {
             e.stopPropagation();
-            db.ref("explorer" + folderKeyPath + "/children").push({ type: "file", name: "New File", content: "" });
+            db.ref("explorer" + folderKeyPath + "/children").push({
+              type: "file",
+              name: "New File",
+              content: ""
+            });
             expandedFolders[folderKeyPath] = true; // keep it open
           };
           childrenEl.appendChild(addFileBtn);
@@ -305,7 +447,9 @@
               nameEl.contentEditable = "false";
             }
           };
-          nameEl.onblur = () => { nameEl.contentEditable = "false"; };
+          nameEl.onblur = () => {
+            nameEl.contentEditable = "false";
+          };
 
           itemEl.appendChild(nameEl);
           itemEl.appendChild(makeDeleteBtn(path + "/" + key, data));
@@ -336,7 +480,7 @@
     }
 
     function openFile(path, data) {
-      currentFilePath = path;            // e.g. "/<folderId>/children/<fileId>"
+      currentFilePath = path; // e.g. "/<folderId>/children/<fileId>"
       currentFileName = data.name || "untitled";
       fileNameEl.textContent = currentFileName;
       codeArea.disabled = false;
@@ -356,11 +500,18 @@
       if (!filename) return text;
       const lower = filename.toLowerCase();
       if (lower.endsWith(".html") || lower.endsWith(".htm")) {
-        return html_beautify(text, { indent_size: 2, end_with_newline: false });
+        return html_beautify(text, {
+          indent_size: 2,
+          end_with_newline: false
+        });
       } else if (lower.endsWith(".js")) {
-        return js_beautify(text, { indent_size: 2 });
+        return js_beautify(text, {
+          indent_size: 2
+        });
       } else if (lower.endsWith(".css")) {
-        return css_beautify(text, { indent_size: 2 });
+        return css_beautify(text, {
+          indent_size: 2
+        });
       } else {
         return text;
       }
@@ -405,21 +556,37 @@
       popupOverlay.setAttribute("aria-hidden", "false");
       popupYes.focus();
     }
-    popupYes.onclick = () => { if (popupAction) popupAction(); closePopup(); };
+    popupYes.onclick = () => {
+      if (popupAction) popupAction();
+      closePopup();
+    };
     popupNo.onclick = closePopup;
-    popupOverlay.onclick = e => { if (e.target === popupOverlay) closePopup(); };
-    function closePopup() { popupOverlay.style.display = "none"; popupOverlay.setAttribute("aria-hidden", "true"); popupAction = null; }
+    popupOverlay.onclick = e => {
+      if (e.target === popupOverlay) closePopup();
+    };
+
+    function closePopup() {
+      popupOverlay.style.display = "none";
+      popupOverlay.setAttribute("aria-hidden", "true");
+      popupAction = null;
+    }
 
     // Toast
     function showToast(msg, ms = 1400) {
       toast.textContent = msg;
       toast.style.display = "block";
-      setTimeout(() => { toast.style.display = "none"; }, ms);
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, ms);
     }
 
     // Add folder root
     document.getElementById("addFolderBtn").onclick = () => {
-      db.ref("explorer").push({ type: "folder", name: "New Folder", children: {} });
+      db.ref("explorer").push({
+        type: "folder",
+        name: "New Folder",
+        children: {}
+      });
     };
 
     // Render tree on DB changes
@@ -442,37 +609,34 @@
         }
       }
     });
-(function(){
-  try {
-    // ambil data akses
-    const raw = sessionStorage.getItem('dashboard_access'); // atau localStorage kalau pakai itu
-    if (!raw) throw new Error("No access token");
+    (function() {
+      try {
+        // ambil data akses
+        const raw = sessionStorage.getItem('dashboard_access'); // atau localStorage kalau pakai itu
+        if (!raw) throw new Error("No access token");
 
-    const data = JSON.parse(raw);
-    if (!data.token) throw new Error("Invalid token");
+        const data = JSON.parse(raw);
+        if (!data.token) throw new Error("Invalid token");
 
-    // ✅ Token ada → akses diizinkan
-    console.log("Access granted:", data.token);
+        // ✅ Token ada → akses diizinkan
+        console.log("Access granted:", data.token);
 
-  } catch (err) {
-    console.warn("Access denied:", err.message);
-    // arahkan balik ke dashboard
-    window.location.replace("index.html"); // ganti dengan nama file dashboard kamu
-  }
-})();
+      } catch (err) {
+        console.warn("Access denied:", err.message);
+        // arahkan balik ke dashboard
+        window.location.replace("index.html"); // ganti dengan nama file dashboard kamu
+      }
+    })();
 
- document.getElementById("backBtn").onclick = () => {
-    window.location.href = "beranda.html";
-  };
 
-  // shortcut alt +Z → balik ke dashboard
-  document.addEventListener("keydown", (e) => {
-  if (e.altKey && e.key.toLowerCase() === "z") {
-    e.preventDefault();
-    document.getElementById("backBtn").click();
-  }
-});
-
+    // shortcut Ctrl+Z → balik ke dashboard
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        window.location.href = "beranda.html";
+      }
+    });
   </script>
 </body>
+
 </html>
