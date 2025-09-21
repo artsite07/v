@@ -1,218 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Adlan Madjied Ridho</title>
-<link rel="icon" href="1.png" />
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Adlan Madjied Ridho</title>
+  <link rel="icon" href="1.png" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-<style>
-  :root {
-    --bg: #000;
-    --cyan: #00fff7;
-    --subcyan: #7fffd4;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    height: 100vh;
-    background: var(--bg);
-    color: var(--cyan);
-    font-family: "Courier New", monospace;
-    display: flex;
-    flex-direction: column;
-  }
+  <style>
+    :root {
+      --bg: #000;
+      --cyan: #00fff7;
+      --subcyan: #7fffd4;
+    }
 
-  /* tombol kembali */
-.back-btn-inline {
-  padding: 6px 12px;
-  border: 1px solid rgba(0,255,247,0.25);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--cyan);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 14px;
-  flex-shrink: 0;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-.back-btn-inline:hover {
-  background: var(--cyan);
-  color: #000;
-}
+    body {
+      margin: 0;
+      height: 100vh;
+      background: var(--bg);
+      color: var(--cyan);
+      font-family: "Courier New", monospace;
+      display: flex;
+      flex-direction: column;
+    }
 
-  /* header with input */
- header {
-  padding: 14px;
-  border-bottom: 1px solid rgba(0,255,247,0.2);
-  display: flex;
-  gap: 8px;
-  background: #050505;
-  align-items: center;
-  /* padding-left: 60px; */ /* bisa dihapus */
-}
+    /* header with input */
+    header {
+      padding: 14px;
+      border-bottom: 1px solid rgba(0, 255, 247, 0.2);
+      display: flex;
+      gap: 8px;
+      background: #050505;
+      align-items: center;
+      /* padding-left: 60px; */
+      /* bisa dihapus */
+    }
 
-  header input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid rgba(0,255,247,0.2);
-    border-radius: 6px;
-    background: #000;
-    color: var(--cyan);
-    font-family: inherit;
-  }
-  header button {
-    padding: 10px 16px;
-    border: 1px solid rgba(0,255,247,0.2);
-    border-radius: 6px;
-    background: var(--cyan);
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  header button:hover {
-    background: var(--subcyan);
-  }
+    header input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid rgba(0, 255, 247, 0.2);
+      border-radius: 6px;
+      background: #000;
+      color: var(--cyan);
+      font-family: inherit;
+    }
 
-  /* list container */
-  .list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .notif {
-    padding: 10px 12px;
-    border: 1px solid rgba(0,255,247,0.2);
-    border-radius: 6px;
-    background: #0b0b0b;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .notif span {
-    flex: 1;
-    margin-right: 12px;
-    word-break: break-word;
-    color: var(--subcyan);
-  }
-  .notif button {
-    padding: 6px 10px;
-    border: 1px solid rgba(0,255,247,0.2);
-    border-radius: 4px;
-    background: transparent;
-    color: var(--cyan);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.9rem;
-  }
-  .notif button:hover {
-    background: var(--cyan);
-    color: #000;
-  }
-</style>
+    header button {
+      padding: 10px 16px;
+      border: 1px solid rgba(0, 255, 247, 0.2);
+      border-radius: 6px;
+      background: var(--cyan);
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    header button:hover {
+      background: var(--subcyan);
+    }
+
+    /* list container */
+    .list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .notif {
+      padding: 10px 12px;
+      border: 1px solid rgba(0, 255, 247, 0.2);
+      border-radius: 6px;
+      background: #0b0b0b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notif span {
+      flex: 1;
+      margin-right: 12px;
+      word-break: break-word;
+      color: var(--subcyan);
+    }
+
+    .notif button {
+      padding: 6px 10px;
+      border: 1px solid rgba(0, 255, 247, 0.2);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--cyan);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .notif button:hover {
+      background: var(--cyan);
+      color: #000;
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <button class="back-btn-inline" onclick="window.history.back()">⬅ Kembali</button>
-  <input type="text" id="notifInput" placeholder="Enter notification text..." />
-  <button onclick="addNotif()">Add</button>
-</header>
+  <header>
+    <input type="text" id="notifInput" placeholder="Enter notification text..." />
+    <button onclick="addNotif()">Add</button>
+  </header>
 
 
   <div class="list" id="notifList">
     <!-- notifications will appear here -->
   </div>
 
-<script>
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
-    authDomain: "index-68220.firebaseapp.com",
-    databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
-    projectId: "index-68220",
-    storageBucket: "index-68220.firebasestorage.app",
-    messagingSenderId: "633087068802",
-    appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
-    measurementId: "G-2VQCRFJQCM"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
+      authDomain: "index-68220.firebaseapp.com",
+      databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+      projectId: "index-68220",
+      storageBucket: "index-68220.firebasestorage.app",
+      messagingSenderId: "633087068802",
+      appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
+      measurementId: "G-2VQCRFJQCM"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  const inputEl = document.getElementById("notifInput");
-  const listEl = document.getElementById("notifList");
+    const inputEl = document.getElementById("notifInput");
+    const listEl = document.getElementById("notifList");
 
-  function addNotif() {
-    const text = inputEl.value.trim();
-    if (!text) return;
-    db.ref("notifications").push({ text }).then(() => {
-      inputEl.value = "";
+    function addNotif() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      db.ref("notifications").push({
+        text
+      }).then(() => {
+        inputEl.value = "";
+      });
+    }
+
+    function deleteNotif(id) {
+      db.ref("notifications/" + id).remove();
+    }
+
+    // Enter key to add
+    inputEl.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        addNotif();
+      }
     });
-  }
 
-  function deleteNotif(id) {
-    db.ref("notifications/" + id).remove();
-  }
-
-  // Enter key to add
-  inputEl.addEventListener("keydown", e => {
-    if (e.key === "Enter") {
-      addNotif();
-    }
-  });
-
-  // render notifications
-  db.ref("notifications").on("value", snap => {
-    listEl.innerHTML = "";
-    if (!snap.exists()) {
-      listEl.innerHTML = "<div style='opacity:.6'>No notifications saved</div>";
-      return;
-    }
-    snap.forEach(child => {
-      const d = child.val();
-      const div = document.createElement("div");
-      div.className = "notif";
-      div.innerHTML = `
+    // render notifications
+    db.ref("notifications").on("value", snap => {
+      listEl.innerHTML = "";
+      if (!snap.exists()) {
+        listEl.innerHTML = "<div style='opacity:.6'>No notifications saved</div>";
+        return;
+      }
+      snap.forEach(child => {
+        const d = child.val();
+        const div = document.createElement("div");
+        div.className = "notif";
+        div.innerHTML = `
         <span>${escapeHTML(d.text || "")}</span>
         <button onclick="deleteNotif('${child.key}')">Delete</button>
       `;
-      listEl.prepend(div);
+        listEl.prepend(div);
+      });
     });
-  });
 
-  function escapeHTML(s){
-    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
-  }
-
-  // Proteksi akses dengan token
-  (function(){
-    try {
-      const raw = sessionStorage.getItem('dashboard_access');
-      if (!raw) throw new Error("No access token");
-      const data = JSON.parse(raw);
-      if (!data.token) throw new Error("Invalid token");
-      console.log("Access granted:", data.token);
-    } catch (err) {
-      console.warn("Access denied:", err.message);
-      window.location.replace("index.html");
+    function escapeHTML(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
     }
-  })();
 
-    // Tambah shortcut alt + z untuk kembali
-document.addEventListener("keydown", (e) => {
-  if (e.altKey && e.key.toLowerCase() === "z") {
-    e.preventDefault();
-    window.history.back();
-  }
-});
-
-
-</script>
+    // Proteksi akses dengan token
+    (function() {
+      try {
+        const raw = sessionStorage.getItem('dashboard_access');
+        if (!raw) throw new Error("No access token");
+        const data = JSON.parse(raw);
+        if (!data.token) throw new Error("Invalid token");
+        console.log("Access granted:", data.token);
+      } catch (err) {
+        console.warn("Access denied:", err.message);
+        window.location.replace("index.html");
+      }
+    })();
+  </script>
 </body>
+
 </html>
