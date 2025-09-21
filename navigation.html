@@ -1,163 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<title>Adlan Madjied Ridho</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  body {
-    margin:0;
-    font-family:"Courier New",monospace;
-    background:#000;
-    color:#00fff7;
-  }
-
-  /* tombol kembali */
-  .back-btn {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    padding: 6px 12px;
-    border: 1px solid rgba(0,255,247,0.25);
-    border-radius: 6px;
-    background: transparent;
-    color:#00fff7;
-    cursor:pointer;
-    font-size:14px;
-    z-index:1000;
-  }
-  .back-btn:hover {
-    background:#00fff7;
-    color:#000;
-  }
-
-  header {
-    background:#050505;
-    padding:15px 15px 15px 60px; /* kasih space kiri biar ga ketiban tombol */
-    border-bottom:1px solid rgba(0,255,247,0.3);
-    display:flex;
-    gap:10px;
-    align-items:center;
-  }
-  header input {
-    flex:1;
-    padding:8px;
-    background:#000;
-    border:1px solid rgba(0,255,247,0.5);
-    color:#00fff7;
-    border-radius:4px;
-  }
-  header button {
-    background:#000;
-    border:1px solid #00fff7;
-    color:#00fff7;
-    padding:8px 14px;
-    border-radius:4px;
-    cursor:pointer;
-  }
-  header button:hover {
-    background:#00fff7;
-    color:#000;
-  }
-
-  ul { list-style:none; margin:0; padding:20px; }
-  li {
-    background:#050505;
-    margin-bottom:10px;
-    padding:10px;
-    border:1px solid rgba(0,255,247,0.2);
-    border-radius:6px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
-  a { color:#7fffd4; text-decoration:none; }
-  button.del {
-    background:none;
-    border:none;
-    color:#ff4d4d;
-    cursor:pointer;
-    font-size:1rem;
-  }
-</style>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
-    authDomain: "index-68220.firebaseapp.com",
-    databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
-    projectId: "index-68220",
-    storageBucket: "index-68220.firebasestorage.app",
-    messagingSenderId: "633087068802",
-    appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
-    measurementId: "G-2VQCRFJQCM"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  function addNav() {
-    const name = document.getElementById("navName").value.trim();
-    const link = document.getElementById("navLink").value.trim();
-    if(!name || !link) return;
-    const id = Date.now();
-    db.ref("navigation/"+id).set({name, link});
-    document.getElementById("navName").value="";
-    document.getElementById("navLink").value="";
-  }
-  function delNav(id) {
-    db.ref("navigation/"+id).remove();
-  }
-  window.onload=()=>{
-    const list=document.getElementById("navList");
-    db.ref("navigation").on("value",snap=>{
-      list.innerHTML="";
-      if(!snap.exists()){list.innerHTML="<li style='opacity:.6'>No navigation</li>";return;}
-      snap.forEach(child=>{
-        const d=child.val();
-        const li=document.createElement("li");
-        li.innerHTML=`<a href="${d.link}" target="_blank">${d.name}</a>
-          <button class="del" onclick="delNav('${child.key}')">✖</button>`;
-        list.appendChild(li);
-      });
-    });
-    document.getElementById("navLink").addEventListener("keypress",e=>{
-      if(e.key==="Enter") addNav();
-    });
-  }
-
-  // proteksi akses dengan token
-  (function(){
-    try {
-      const raw = sessionStorage.getItem('dashboard_access');
-      if (!raw) throw new Error("No access token");
-      const data = JSON.parse(raw);
-      if (!data.token) throw new Error("Invalid token");
-      console.log("Access granted:", data.token);
-    } catch (err) {
-      console.warn("Access denied:", err.message);
-      window.location.replace("index.html");
+  <meta charset="utf-8">
+  <title>Navigation Manager — Semi Hecker Cyan</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Courier New", monospace;
+      background: #000;
+      color: #00fff7;
     }
-  })();
 
-    // Tambah shortcut alt + z untuk kembali
-document.addEventListener("keydown", (e) => {
-  if (e.altKey && e.key.toLowerCase() === "z") {
-    e.preventDefault();
-    window.history.back();
-  }
-});
+    header {
+      background: #050505;
+      padding: 15px 15px 15px 60px;
+      /* kasih space kiri biar ga ketiban tombol */
+      border-bottom: 1px solid rgba(0, 255, 247, 0.3);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
 
-</script>
+    header input {
+      flex: 1;
+      padding: 8px;
+      background: #000;
+      border: 1px solid rgba(0, 255, 247, 0.5);
+      color: #00fff7;
+      border-radius: 4px;
+    }
+
+    header button {
+      background: #000;
+      border: 1px solid #00fff7;
+      color: #00fff7;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    header button:hover {
+      background: #00fff7;
+      color: #000;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 20px;
+    }
+
+    li {
+      background: #050505;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid rgba(0, 255, 247, 0.2);
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    a {
+      color: #7fffd4;
+      text-decoration: none;
+    }
+
+    button.del {
+      background: none;
+      border: none;
+      color: #ff4d4d;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
+      authDomain: "index-68220.firebaseapp.com",
+      databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+      projectId: "index-68220",
+      storageBucket: "index-68220.firebasestorage.app",
+      messagingSenderId: "633087068802",
+      appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
+      measurementId: "G-2VQCRFJQCM"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function addNav() {
+      const name = document.getElementById("navName").value.trim();
+      const link = document.getElementById("navLink").value.trim();
+      if (!name || !link) return;
+      const id = Date.now();
+      db.ref("navigation/" + id).set({
+        name,
+        link
+      });
+      document.getElementById("navName").value = "";
+      document.getElementById("navLink").value = "";
+    }
+
+    function delNav(id) {
+      db.ref("navigation/" + id).remove();
+    }
+    window.onload = () => {
+      const list = document.getElementById("navList");
+      db.ref("navigation").on("value", snap => {
+        list.innerHTML = "";
+        if (!snap.exists()) {
+          list.innerHTML = "<li style='opacity:.6'>No navigation</li>";
+          return;
+        }
+        snap.forEach(child => {
+          const d = child.val();
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="${d.link}" target="_blank">${d.name}</a>
+          <button class="del" onclick="delNav('${child.key}')">✖</button>`;
+          list.appendChild(li);
+        });
+      });
+      document.getElementById("navLink").addEventListener("keypress", e => {
+        if (e.key === "Enter") addNav();
+      });
+    }
+
+    // proteksi akses dengan token
+    (function() {
+      try {
+        const raw = sessionStorage.getItem('dashboard_access');
+        if (!raw) throw new Error("No access token");
+        const data = JSON.parse(raw);
+        if (!data.token) throw new Error("Invalid token");
+        console.log("Access granted:", data.token);
+      } catch (err) {
+        console.warn("Access denied:", err.message);
+        window.location.replace("index.html");
+      }
+    })();
+
+  </script>
 </head>
-<body>
-<header>
-  <button class="back-btn-inline" onclick="window.history.back()">⬅ Kembali</button>
-  <input id="navName" placeholder="Name">
-  <input id="navLink" placeholder="Link (https://...)">
-  <button onclick="addNav()">Add</button>
-</header>
 
-  <ul id="navList"><li style="opacity:.6">Loading...</li></ul>
+<body>
+
+  <header>
+    <input id="navName" placeholder="Name">
+    <input id="navLink" placeholder="Link (https://...)">
+    <button onclick="addNav()">Add</button>
+  </header>
+  <ul id="navList">
+    <li style="opacity:.6">Loading...</li>
+  </ul>
 </body>
+
 </html>
