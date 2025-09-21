@@ -47,12 +47,6 @@
       background: cyan;
       color: #000;
     }
-    .back-btn {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      z-index: 1000;
-    }
     .quote-card {
       border: 1px solid cyan;
       margin: 10px auto;
@@ -72,9 +66,6 @@
   </style>
 </head>
 <body>
-  <!-- Tombol kembali -->
-  <button class="back-btn" onclick="window.history.back()">⬅ Kembali</button>
-
   <h1>💬 Quotes Saver</h1>
   <div class="input-container">
     <input id="quoteInput" type="text" placeholder="Write your quote...">
@@ -148,15 +139,6 @@
         window.location.replace("index.html");
       }
     })();
-
-  // shortcut alt +Z → balik ke dashboard
-document.addEventListener("keydown", (e) => {
-  if (e.altKey && e.key.toLowerCase() === "z") {
-    e.preventDefault();
-    window.history.back(); // langsung kembali
-  }
-});
-
   </script>
 </body>
 </html>
