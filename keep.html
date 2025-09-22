@@ -187,18 +187,17 @@
     .keep-title {
       font-weight: bold;
       margin-bottom: 6px;
-      cursor: pointer;
     }
 
     .keep-text {
       white-space: pre-wrap;
-      cursor: pointer;
     }
 
     .keep-text a {
       color: var(--subcyan);
     }
 
+    .keep-edit-btn,
     .keep-delete-btn {
       background: transparent;
       border: none;
@@ -206,6 +205,7 @@
       cursor: pointer;
       font-size: 14px;
       height: fit-content;
+      margin-left: 4px;
     }
 
     .keep-delete-btn:hover {
@@ -242,7 +242,7 @@
     }
 
     .popup button {
-      margin: 0 6px;
+      margin: 6px;
       padding: 8px 14px;
       border: 1px solid var(--cyan);
       background: transparent;
@@ -256,9 +256,16 @@
       color: #000;
     }
 
-    [contenteditable="true"] {
-      outline: none;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    .popup input,
+    .popup textarea {
+      width: 100%;
+      padding: 8px;
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-family: monospace;
     }
   </style>
 </head>
@@ -291,12 +298,24 @@
     </main>
   </div>
 
-  <!-- Popup -->
+  <!-- Popup Delete -->
   <div class="popup-overlay" id="popupOverlay">
     <div class="popup">
       <p id="popupMessage">Are you sure?</p>
       <button id="confirmDelete">Delete</button>
       <button id="cancelDelete">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Popup Edit -->
+  <div class="popup-overlay" id="editOverlay">
+    <div class="popup">
+      <h3>Edit Note</h3>
+      <input id="editTitle" placeholder="Title..." />
+      <textarea id="editText" placeholder="Write something..."></textarea>
+      <br>
+      <button id="saveEdit">Save</button>
+      <button id="cancelEdit">Cancel</button>
     </div>
   </div>
 
@@ -325,11 +344,19 @@
     const titleInput = document.getElementById("titleInput");
     const keepInput = document.getElementById("keepInput");
 
-    // popup
+    // popup delete
     const popupOverlay = document.getElementById("popupOverlay");
     const popupMessage = document.getElementById("popupMessage");
     const confirmDelete = document.getElementById("confirmDelete");
     const cancelDelete = document.getElementById("cancelDelete");
+
+    // popup edit
+    const editOverlay = document.getElementById("editOverlay");
+    const editTitle = document.getElementById("editTitle");
+    const editText = document.getElementById("editText");
+    const saveEdit = document.getElementById("saveEdit");
+    const cancelEdit = document.getElementById("cancelEdit");
+    let editingId = null;
 
     function slugify(name) {
       return name.toLowerCase().replace(/\s+/g, '-');
@@ -369,9 +396,7 @@
       const name = pageInput.value.trim();
       if (!name) return;
       const slug = slugify(name);
-      db.ref("pages/" + slug).set({
-        name
-      });
+      db.ref("pages/" + slug).set({ name });
       pageInput.value = "";
     }
     addPageBtn.onclick = addPage;
@@ -408,10 +433,7 @@
       const title = titleInput.value.trim();
       const text = keepInput.value.trim();
       if (!title && !text) return;
-      db.ref("keeps/" + currentPage).push({
-        title,
-        text
-      });
+      db.ref("keeps/" + currentPage).push({ title, text });
       titleInput.value = "";
       keepInput.value = "";
     }
@@ -425,42 +447,43 @@
           card.className = "keep-card";
           card.innerHTML = `
             <div>
-              <div class="keep-title" ondblclick="editKeep(this,'${id}','title')">${escapeHtml(data.title||"")}</div>
-              <div class="keep-text" ondblclick="editKeep(this,'${id}','text')">${linkify(data.text||"")}</div>
+              <div class="keep-title">${escapeHtml(data.title||"")}</div>
+              <div class="keep-text">${linkify(data.text||"")}</div>
             </div>
-            <button class="keep-delete-btn" onclick="askDelete('note','${currentPage}','${id}','${escapeHtml(data.title||'Note')}')">🗑</button>`;
+            <div>
+              <button class="keep-edit-btn" onclick="openEditPopup('${id}', \`${escapeHtml(data.title||"")}\`, \`${escapeHtml(data.text||"")}\`)">✏️</button>
+              <button class="keep-delete-btn" onclick="askDelete('note','${currentPage}','${id}','${escapeHtml(data.title||'Note')}')">🗑</button>
+            </div>`;
           keepsContainer.appendChild(card);
         });
       });
     }
 
-    // edit keep
-    function editKeep(el, id, field) {
-      el.setAttribute("contenteditable", "true");
-      el.focus();
-      el.onkeydown = function(e) {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          el.removeAttribute("contenteditable");
-          saveChange(id, field, el.innerText.trim());
-        }
-      };
-      el.onblur = function() {
-        el.removeAttribute("contenteditable");
-        saveChange(id, field, el.innerText.trim());
-      };
+    // edit popup
+    function openEditPopup(id, title, text) {
+      editingId = id;
+      editTitle.value = title;
+      editText.value = text;
+      editOverlay.style.display = "flex";
+      editTitle.focus();
     }
 
-    function saveChange(id, field, val) {
-      db.ref("keeps/" + currentPage + "/" + id).once("value").then(s => {
-        const old = s.val() || {};
-        const upd = {
-          title: field === "title" ? val : (old.title || ""),
-          text: field === "text" ? val : (old.text || "")
-        };
-        db.ref("keeps/" + currentPage + "/" + id).update(upd);
+    saveEdit.onclick = function() {
+      if (!editingId) return;
+      const newTitle = editTitle.value.trim();
+      const newText = editText.value.trim();
+      db.ref("keeps/" + currentPage + "/" + editingId).update({
+        title: newTitle,
+        text: newText
       });
-    }
+      editOverlay.style.display = "none";
+      editingId = null;
+    };
+
+    cancelEdit.onclick = function() {
+      editOverlay.style.display = "none";
+      editingId = null;
+    };
 
     // rename page
     function renamePage(el, slug) {
@@ -481,14 +504,10 @@
 
     // delete with popup
     function askDelete(type, slug, id, name) {
-      deleteTarget = {
-        type,
-        slug,
-        id
-      };
-      popupMessage.textContent = type === "page" ?
-        `Delete page "${name}"?` :
-        `Delete note "${name}"?`;
+      deleteTarget = { type, slug, id };
+      popupMessage.textContent = type === "page"
+        ? `Delete page "${name}"?`
+        : `Delete note "${name}"?`;
       popupOverlay.style.display = "flex";
       confirmDelete.focus();
     }
