@@ -1,231 +1,1010 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Adlan Madjied Ridho</title>
-<link rel="icon" type="image/png" href="1.png">
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-html.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-css.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-<style>
-:root{--bg:#000;--cyan:cyan;--subcyan:#7fffd4;--sidebar:#050505;}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--cyan);font-family:monospace;scrollbar-width:none;-ms-overflow-style:none;}
-html::-webkit-scrollbar, body::-webkit-scrollbar, .sidebar::-webkit-scrollbar, .editor::-webkit-scrollbar, .children::-webkit-scrollbar {width:0;height:0;}
-.app{display:flex;height:100vh;}
-.sidebar{width:280px;background:var(--sidebar);border-right:1px solid var(--cyan);padding:10px;box-sizing:border-box;overflow:auto;position:relative;}
-.brand{font-size:18px;margin-bottom:10px;text-shadow:0 0 10px var(--cyan);}
-.add-buttons{display:flex;gap:6px;margin-bottom:10px;}
-.add-buttons button{flex:1;padding:6px;background:transparent;border:1px solid var(--cyan);border-radius:6px;color:var(--cyan);cursor:pointer;}
-.add-buttons button:hover{background:var(--cyan);color:#000;}
-.tree{font-size:14px;}
-.item{padding:4px 0 4px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;}
-.item:hover{background:rgba(0,255,255,0.05);}
-.item .name{flex:1;user-select:none;}
-.children{margin-left:16px;overflow:auto;display:none;}
-.add-file-btn{display:block;margin:4px 0 6px 20px;padding:2px 6px;background:transparent;border:1px solid var(--cyan);border-radius:4px;color:var(--cyan);cursor:pointer;font-size:12px;}
-.add-file-btn:hover{background:var(--cyan);color:#000;}
-.main{flex:1;display:flex;flex-direction:column;}
-.header{padding:10px;border-bottom:1px solid var(--cyan);display:flex;justify-content:space-between;}
-.filename{font-weight:bold;}
-.editor{flex:1;display:flex;flex-direction:column;overflow:auto;}
-.editor textarea{flex:1;background:#111;color:var(--cyan);border:none;padding:12px;font-family:monospace;font-size:14px;outline:none;resize:none;white-space:pre;overflow:auto;}
-.save-btn{padding:8px 14px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);cursor:pointer;border-radius:8px;margin:10px;align-self:flex-start;}
-.save-btn:hover{background:var(--cyan);color:#000;}
-.toast{position:fixed;bottom:20px;right:20px;background:#111;border:1px solid var(--cyan);color:var(--cyan);padding:8px 12px;border-radius:8px;box-shadow:0 0 12px rgba(0,255,255,0.3);display:none;z-index:2000;}
-#contextMenu{position:absolute;display:none;background:#111;border:1px solid cyan;border-radius:6px;z-index:5000;}
-#contextMenu .ctxOption{padding:6px 12px;cursor:pointer;}
-#contextMenu .ctxOption:hover{background:cyan;color:#000;}
-#confirmPopup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-background:#111;border:1px solid cyan;padding:20px;border-radius:8px;z-index:10000;text-align:center;min-width:220px;}
-#confirmPopup button{padding:6px 12px;margin:0 6px;border:1px solid cyan;border-radius:6px;background:transparent;color:var(--cyan);cursor:pointer;}
-#confirmPopup button:hover{background:cyan;color:#000;}
-</style>
+  <meta charset="utf-8" />
+  <title>Modern Code Explorer</title>
+  <link rel="icon" type="image/png" href="1.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <!-- Font Awesome untuk Ikon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Beautifier -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-css.min.js"></script>
+  
+  <style>
+    /* ---------------------------------
+       MODERN LIGHT MODE STYLES (Vibrant Cyan Accent)
+       --------------------------------- */
+    :root {
+      --bg-primary: #ffffff; /* Main Background (Editor) - White */
+      --bg-secondary: #f0f8ff; /* Sidebar/Header - Very light bluish-white */
+      --text-primary: #212121; /* Main Text - Very dark gray */
+      --text-secondary: #757575; /* Subtle Text/Icons - Medium gray */
+      --accent-color: #00ACC1; /* Vibrant Cyan/Aqua (Main Accent) */
+      --error-color: #d32f2f; /* Red for Delete */
+      --border-color: #d9e3e7; /* Subtle border - Light bluish-gray */
+      --hover-bg: rgba(0, 172, 193, 0.2); /* Vibrant Cyan hover (20% opacity for more punch) */
+      --success-color: #388e3c; /* Green for save */
+      --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-code: "Consolas", "Monaco", monospace;
+      --radius: 6px;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 14px;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden; 
+    }
+
+    /* ---------------------------------
+       SIDEBAR SCROLL (Independen)
+       --------------------------------- */
+    .sidebar {
+      width: 250px;
+      min-width: 200px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      box-sizing: border-box;
+      overflow-y: auto; 
+      flex-shrink: 0;
+      
+      /* Scrollbar Styling for light theme */
+      scrollbar-width: thin;
+      scrollbar-color: #bbbbbb var(--bg-secondary);
+    }
+    
+    .sidebar::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background-color: #bbbbbb; 
+      border-radius: 4px;
+    }
+
+
+    /* ---------------------------------
+       EDITOR / MAIN AREA
+       --------------------------------- */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden; 
+    }
+
+    .header {
+      padding: 10px 15px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 40px;
+      box-sizing: border-box;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .editor {
+      flex: 1;
+      position: relative; 
+    }
+
+    /* ---------------------------------
+       TEXTAREA (Scrollable Element)
+       --------------------------------- */
+    #codeArea {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 15px;
+      box-sizing: border-box;
+      border: none;
+      resize: none;
+      
+      /* Styling Teks dan Warna */
+      font-family: var(--font-code);
+      font-size: 14px;
+      line-height: 1.5;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      
+      /* Scroll yang Mandiri */
+      overflow: auto; 
+    }
+    
+    #codeArea::placeholder {
+        color: var(--text-secondary);
+        opacity: 1;
+    }
+
+
+    /* --- Stylings Lanjutan Sidebar --- */
+
+    .brand {
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 10px;
+      color: var(--accent-color); /* Cyan cerah */
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .add-buttons {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .add-buttons button {
+      flex: 1;
+      padding: 6px 10px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .add-buttons button:hover {
+      background: var(--hover-bg);
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+
+    .tree {
+      font-size: 13px;
+      padding: 5px 0;
+    }
+
+    .item-wrapper {
+      position: relative;
+    }
+
+    .item {
+      padding: 4px 10px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      line-height: 1.5;
+      gap: 6px;
+    }
+
+    .item.selected {
+      background: var(--hover-bg);
+      outline: 1px solid var(--accent-color);
+    }
+
+    .item:not(.selected):hover {
+      background: var(--hover-bg);
+    }
+
+    .item i {
+      color: var(--text-secondary);
+      width: 14px;
+      text-align: center;
+    }
+
+    .item .name {
+      flex: 1;
+      user-select: none;
+      padding: 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item .name[contenteditable="true"] {
+      background: var(--bg-primary);
+      border: 1px solid var(--accent-color);
+      padding: 1px 4px;
+      margin: -1px 0;
+      border-radius: 3px;
+      outline: none;
+      color: var(--text-primary);
+    }
+
+    .children {
+      margin-left: 12px;
+      border-left: 1px dashed var(--border-color);
+    }
+
+    .add-file-btn {
+      display: block;
+      margin: 4px 10px 6px 20px;
+      padding: 4px 8px;
+      background: transparent;
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 12px;
+      text-align: left;
+      transition: all 0.2s;
+    }
+
+    .add-file-btn:hover {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+      background: var(--hover-bg);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .filename {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .action-btn {
+      padding: 8px 12px;
+      border: none;
+      color: white; 
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: background 0.2s, box-shadow 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .save-btn {
+      background: var(--accent-color); /* Cyan cerah */
+    }
+
+    .save-btn:hover:not(:disabled) {
+      background: #008392; /* Darker cyan on hover */
+      box-shadow: 0 2px 8px rgba(0, 172, 193, 0.4);
+    }
+
+    .download-btn {
+      background: var(--success-color);
+    }
+
+    .download-btn:hover:not(:disabled) {
+      background: #2e7d32;
+    }
+
+    .save-btn:disabled,
+    .download-btn:disabled {
+      background: var(--border-color);
+      color: var(--text-secondary);
+      cursor: not-allowed;
+    }
+
+    /* Context Menu Styles */
+    #contextMenu {
+      position: fixed;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+      z-index: 2000;
+      display: none;
+      padding: 5px 0;
+      min-width: 150px;
+    }
+
+    .context-item {
+      padding: 8px 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .context-item:hover {
+      background: var(--hover-bg);
+      color: var(--accent-color);
+    }
+
+    .context-item i {
+      color: var(--text-secondary);
+      width: 16px;
+    }
+    
+    .context-item:hover i {
+      color: var(--accent-color);
+    }
+
+    .context-item.delete-action:hover {
+      color: var(--error-color);
+    }
+
+    .context-item.delete-action:hover i {
+      color: var(--error-color);
+    }
+
+    /* Popup confirm (Modern Modal) */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4); 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      display: none;
+      backdrop-filter: blur(2px);
+    }
+
+    .popup {
+      background: var(--bg-primary); /* White popup */
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 25px;
+      width: 90%;
+      max-width: 350px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .popup p {
+      margin-bottom: 20px;
+      font-size: 15px;
+      color: var(--text-primary);
+    }
+
+    .popup-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .popup-actions button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    #popupYes {
+      background: var(--error-color);
+      color: white;
+    }
+
+    #popupYes:hover {
+      background: #a92424;
+    }
+
+    #popupNo {
+      background: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    #popupNo:hover {
+      background: #c7c7c7;
+    }
+
+    /* Toast (Modern Notification) */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent-color); /* Cyan accent for notifications */
+      color: white;
+      padding: 10px 15px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0, 172, 193, 0.4);
+      display: none;
+      z-index: 2000;
+      font-size: 14px;
+    }
+  </style>
 </head>
+
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand">Explorer</div>
-    <div class="add-buttons">
-      <button id="addFolderBtn" type="button">+ Folder</button>
-    </div>
-    <div id="tree" class="tree" aria-label="Explorer tree"></div>
-  </aside>
-  <main class="main">
-    <div class="header">
-      <div class="filename" id="fileName">No file selected</div>
-    </div>
-    <div class="editor">
-      <textarea id="codeArea" placeholder="Select a file to edit..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Code editor" disabled></textarea>
-      <div style="display:flex; gap:10px; margin:10px;">
-        <button class="save-btn" id="saveBtn" type="button" disabled>Save</button>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">Explorer (Vibrant Cyan)</div>
+      <div class="add-buttons">
+        <button id="addFolderBtn" type="button"><i class="fas fa-folder-plus"></i> Folder</button>
+        <button id="addFileBtn" type="button"><i class="fas fa-file-code"></i> File</button>
+      </div>
+      <div id="tree" class="tree" aria-label="Explorer tree"></div>
+    </aside>
+    <main class="main">
+      <div class="header">
+        <div class="filename" id="fileName"><i class="fas fa-info-circle"></i> Pilih file untuk mulai mengedit</div>
+        <div class="header-actions">
+          <button class="action-btn download-btn" id="downloadBtn" type="button" disabled><i class="fas fa-download"></i> Download</button>
+          <button class="action-btn save-btn" id="saveBtn" type="button" disabled><i class="fas fa-save"></i> Simpan (Ctrl+S)</button>
+        </div>
+      </div>
+      <div class="editor">
+        <!-- Kembali menggunakan textarea biasa. Pastikan placeholder terlihat jika kosong -->
+        <textarea 
+            id="codeArea" 
+            placeholder="Pilih file dari sidebar untuk mulai mengedit..."
+            spellcheck="false" 
+            autocomplete="off" 
+            autocorrect="off" 
+            autocapitalize="off"
+            wrap="off"
+            disabled
+        ></textarea> 
+      </div>
+    </main>
+  </div>
+
+  <!-- Context Menu (Menu Klik Kanan Kustom) -->
+  <div id="contextMenu">
+    <!-- Konten diisi oleh JS -->
+  </div>
+
+  <!-- Popup confirm -->
+  <div class="popup-overlay" id="popupOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="popup">
+      <p id="popupMsg">Apakah Anda yakin ingin menghapus item ini?</p>
+      <div class="popup-actions">
+        <button id="popupNo" type="button">Batal</button>
+        <button id="popupYes" type="button">Ya, Hapus</button>
       </div>
     </div>
-  </main>
-</div>
+  </div>
 
-<div class="toast" id="toast">Saved successfully!</div>
-<div id="contextMenu">
-  <div class="ctxOption" data-action="rename">Rename</div>
-  <div class="ctxOption" data-action="download">Download</div>
-  <div class="ctxOption" data-action="delete">Delete</div>
-</div>
-<div id="confirmPopup">
-  <div id="confirmMsg">Apakah Anda yakin?</div>
-  <button id="confirmYes">Yes</button>
-  <button id="confirmNo">Cancel</button>
-</div>
+  <!-- Toast -->
+  <div class="toast" id="toast">Berhasil disimpan!</div>
 
-<script>
-// ===== Firebase Config =====
-const firebaseConfig={apiKey:"AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",authDomain:"index-68220.firebaseapp.com",databaseURL:"https://index-68220-default-rtdb.firebaseio.com",projectId:"index-68220",storageBucket:"index-68220.firebasestorage.app",messagingSenderId:"633087068802",appId:"1:633087068802:web:f8aa1f2ef9c00b99d1429b",measurementId:"G-2VQCRFJQCM"};
-firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
+  <script>
+    // Inisialisasi Firebase
+    const firebaseConfig = {
+      // Config Firebase Realtime Database
+      apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
+      authDomain: "index-68220.firebaseapp.com",
+      databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
+      projectId: "index-68220",
+      storageBucket: "index-68220.firebasestorage.app",
+      messagingSenderId: "633087068802",
+      appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
+      measurementId: "G-2VQCRFJQCM"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-// ===== Elements =====
-const treeEl=document.getElementById("tree"), codeArea=document.getElementById("codeArea"), fileNameEl=document.getElementById("fileName"), saveBtn=document.getElementById("saveBtn"), toast=document.getElementById("toast");
-const contextMenu=document.getElementById("contextMenu"), confirmPopup=document.getElementById("confirmPopup"), confirmMsg=document.getElementById("confirmMsg");
-const confirmYes=document.getElementById("confirmYes"), confirmNo=document.getElementById("confirmNo");
+    // Elemen DOM
+    const treeEl = document.getElementById("tree");
+    const codeArea = document.getElementById("codeArea"); // Textarea yang digunakan
+    const fileNameEl = document.getElementById("fileName");
+    const saveBtn = document.getElementById("saveBtn");
+    const downloadBtn = document.getElementById("downloadBtn"); 
+    const toast = document.getElementById("toast");
+    const popupOverlay = document.getElementById("popupOverlay");
+    const popupMsg = document.getElementById("popupMsg");
+    const popupYes = document.getElementById("popupYes");
+    const popupNo = document.getElementById("popupNo");
+    const addFileBtnRoot = document.getElementById("addFileBtn");
+    const contextMenu = document.getElementById('contextMenu'); 
 
-let currentFileKey=null,currentFileName=null,currentFolderKeys=[],expandedFolders={},contextTarget=null,confirmCallback=null,cacheExplorer={};
+    let currentFilePath = null; 
+    let currentFileName = null; 
+    let popupAction = null;
+    const expandedFolders = {}; 
+    let renamingElement = null; 
+    let treeDataCache = {}; 
 
-// ===== Toast =====
-function showToast(msg,ms=1400){toast.textContent=msg; toast.style.display="block";setTimeout(()=>{toast.style.display="none";},ms);}
-
-// ===== Beautify =====
-function beautifyString(text,filename){if(!filename) return text; const l=filename.toLowerCase(); if(l.endsWith(".html")||l.endsWith(".htm")) return html_beautify(text,{indent_size:2,end_with_newline:false}); if(l.endsWith(".js")) return js_beautify(text,{indent_size:2}); if(l.endsWith(".css")) return css_beautify(text,{indent_size:2}); return text;}
-
-// ===== Render Tree =====
-function renderTree(obj,parentEl,pathKeys=[]){
-  parentEl.innerHTML="";
-  for(const key in obj){
-    const data=obj[key]; if(!data) continue;
-    const itemEl=document.createElement("div"); itemEl.className="item";
-    const nameEl=document.createElement("div"); nameEl.className="name";
-    const currentPathKeys=[...pathKeys,key];
-    if(data.type==="folder"){
-      const folderPath=currentPathKeys.join("/");
-      nameEl.textContent=(expandedFolders[folderPath]?"📂 ":"📁 ")+data.name;
-      const childrenEl=document.createElement("div"); childrenEl.className="children";
-      childrenEl.style.display=expandedFolders[folderPath]?"block":"none";
-      nameEl.onclick=()=>{expandedFolders[folderPath]=!expandedFolders[folderPath]; childrenEl.style.display=expandedFolders[folderPath]?"block":"none"; nameEl.textContent=(expandedFolders[folderPath]?"📂 ":"📁 ")+data.name;};
-      nameEl.oncontextmenu=(e)=>{e.preventDefault(); contextTarget={el:nameEl,type:"folder",pathKeys:currentPathKeys}; showContextMenu(e);};
-      itemEl.appendChild(nameEl); parentEl.appendChild(itemEl);
-      if(data.children) renderTree(data.children,childrenEl,currentPathKeys);
-      const addFileBtn=document.createElement("button"); addFileBtn.className="add-file-btn"; addFileBtn.textContent="+ File";
-      addFileBtn.onclick=(e)=>{e.stopPropagation(); db.ref("explorer/"+key+"/children").push({type:"file",name:"New File",content:""}); expandedFolders[folderPath]=true;};
-      childrenEl.appendChild(addFileBtn); parentEl.appendChild(childrenEl);
-    }else if(data.type==="file"){
-      nameEl.textContent="📄 "+data.name;
-      nameEl.onclick=()=>openFile(key,data,pathKeys);
-      nameEl.oncontextmenu=(e)=>{e.preventDefault(); contextTarget={el:nameEl,type:"file",pathKeys:currentPathKeys}; showContextMenu(e);};
-      itemEl.appendChild(nameEl); parentEl.appendChild(itemEl);
+    // Tidak perlu CodeMirror init, cukup aktifkan shortcut save
+    document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+            e.preventDefault();
+            saveFile();
+        }
+    });
+    
+    // Ikon Helper
+    function getFileIcon(filename) {
+      const lower = filename ? filename.toLowerCase() : "";
+      if (lower.endsWith(".html") || lower.endsWith(".htm")) return '<i class="fab fa-html5" style="color:#e34c26;"></i>';
+      if (lower.endsWith(".css")) return '<i class="fab fa-css3-alt" style="color:#264de4;"></i>';
+      if (lower.endsWith(".js")) return '<i class="fab fa-js-square" style="color:#f7df1e;"></i>';
+      if (lower.endsWith(".json")) return '<i class="fas fa-file-code" style="color:#6a6a6a;"></i>';
+      if (lower.endsWith(".txt")) return '<i class="fas fa-file-alt" style="color:#9e9e9e;">';
+      return '<i class="fas fa-file"></i>';
     }
-  }
-}
 
-// ===== Open File =====
-function openFile(key,data,folderKeys){
-  currentFileKey=key; currentFolderKeys=folderKeys; currentFileName=data.name||"untitled";
-  fileNameEl.textContent=currentFileName; codeArea.disabled=false; saveBtn.disabled=false;
-  codeArea.value=beautifyString(data.content||"",currentFileName);
-}
+    // Fungsi Utama untuk Merender Tree
+    function renderTree(obj, parentEl, path = "") {
+      parentEl.innerHTML = "";
+      
+      const fragment = document.createDocumentFragment();
+      
+      for (const key in obj) {
+        const data = obj[key];
+        if (!data) continue;
 
-// ===== Save =====
-function saveFile(){
-  if(!currentFileKey) return;
-  const content=beautifyString(codeArea.value,currentFileName);
-  const path = ["explorer", ...currentFolderKeys, currentFileKey, "content"].join("/");
-  db.ref(path).set(content).then(()=>showToast("Saved successfully!"));
-}
-document.addEventListener("keydown",e=>{if(e.ctrlKey && e.key.toLowerCase()==="s"){e.preventDefault(); saveFile();}});
+        if (data.type === "folder") {
+          const folderKeyPath = path + "/" + key;
+          const isOpen = !!expandedFolders[folderKeyPath];
+          
+          const wrapperEl = document.createElement("div");
+          wrapperEl.className = "item-wrapper";
+          
+          const itemEl = document.createElement("div");
+          itemEl.className = "item folder-item";
+          itemEl.setAttribute('data-path', folderKeyPath); 
+          itemEl.setAttribute('data-type', 'folder'); 
+          
+          const iconEl = document.createElement('i'); 
+          iconEl.className = isOpen ? "fas fa-folder-open" : "fas fa-folder";
+          iconEl.style.color = "#ffc107"; /* Bright yellow for folders on light background */
+          
+          const nameEl = document.createElement("div");
+          nameEl.className = "name";
+          nameEl.setAttribute("spellcheck", "false"); 
+          nameEl.textContent = data.name;
+          
+          itemEl.appendChild(iconEl);
+          itemEl.appendChild(nameEl);
+          
+          itemEl.onclick = () => toggleFolder(folderKeyPath, iconEl, childrenEl);
+          
+          wrapperEl.appendChild(itemEl);
 
-// ===== Context Menu =====
-function showContextMenu(e){contextMenu.style.display="block"; contextMenu.style.left=e.pageX+"px"; contextMenu.style.top=e.pageY+"px";}
-document.addEventListener("click",()=>{contextMenu.style.display="none";});
-contextMenu.querySelectorAll(".ctxOption").forEach(option=>{
-  option.onclick=()=>{
-    if(!contextTarget) return;
-    const {el,type,pathKeys}=contextTarget;
-    if(option.dataset.action==="rename") startRename(el,pathKeys);
-    if(option.dataset.action==="delete") deleteItem(pathKeys);
-    if(option.dataset.action==="download") type==="file"?downloadFile(pathKeys):downloadFolder(pathKeys);
-    contextMenu.style.display="none"; contextTarget=null;
-  };
-});
+          const childrenEl = document.createElement("div");
+          childrenEl.className = "children";
+          childrenEl.style.display = isOpen ? "block" : "none";
 
-// ===== Rename =====
-function startRename(targetEl,pathKeys){
-  document.querySelectorAll(".item .name").forEach(el=>el.contentEditable=false);
-  const oldName=targetEl.textContent.replace(/^[📂📁📄]\s*/,"");
-  targetEl.textContent=oldName; targetEl.contentEditable=true; targetEl.focus();
-  const sel=window.getSelection(); const range=document.createRange(); range.selectNodeContents(targetEl); sel.removeAllRanges(); sel.addRange(range);
-  function finishRename(newName){
-    newName=newName.trim()||"Untitled";
-    targetEl.contentEditable=false;
-    db.ref("explorer").once("value").then(snap=>{
-      let obj=snap.val();
-      function setName(o,keys){const k=keys[0]; if(!o[k]) return o; if(keys.length===1){ o[k].name=newName; return o;} if(o[k].children) o[k].children=setName(o[k].children,keys.slice(1)); return o;}
-      const updated=setName(obj,pathKeys);
-      db.ref("explorer").set(updated).then(()=>{renderTree(updated,treeEl); showToast("Renamed: "+newName);});
-    });
-  }
-  function cancelRename(){ targetEl.textContent=oldName; targetEl.contentEditable=false;}
-  function keydownHandler(e){if(e.key==="Enter"){e.preventDefault(); finishRename(targetEl.innerText); removeListeners();} if(e.key==="Escape"){e.preventDefault(); cancelRename(); removeListeners();}}
-  function blurHandler(){ cancelRename(); removeListeners();}
-  function removeListeners(){targetEl.removeEventListener("keydown",keydownHandler); targetEl.removeEventListener("blur",blurHandler);}
-  targetEl.addEventListener("keydown",keydownHandler); targetEl.addEventListener("blur",blurHandler);
-}
+          if (data.children) {
+            renderTree(data.children, childrenEl, folderKeyPath + "/children");
+          }
 
-// ===== Delete =====
-function deleteItem(pathKeys){
-  const name=pathKeys[pathKeys.length-1];
-  showConfirm("Hapus "+name+"?", ()=>{
-    db.ref("explorer").once("value").then(snap=>{
-      const obj=snap.val();
-      function del(o, keys){if(keys.length===1){delete o[keys[0]]; return o;} const k=keys[0]; if(o[k] && o[k].children) o[k].children=del(o[k].children, keys.slice(1)); return o;}
-      const updated=del(obj,pathKeys);
-      db.ref("explorer").set(updated);
-    });
-  });
-}
+          const addFileBtn = document.createElement("button");
+          addFileBtn.className = "add-file-btn";
+          addFileBtn.innerHTML = '<i class="fas fa-file-medical"></i> Tambah File';
+          addFileBtn.onclick = (e) => {
+            e.stopPropagation();
+            db.ref("explorer" + folderKeyPath + "/children").push({
+              type: "file",
+              name: "untitled.txt",
+              content: ""
+            });
+            expandedFolders[folderKeyPath] = true; 
+          };
+          childrenEl.appendChild(addFileBtn);
 
-// ===== Confirm Popup =====
-function showConfirm(msg,callback){confirmMsg.textContent=msg; confirmPopup.style.display="block"; confirmCallback=callback;}
-confirmYes.onclick=()=>{confirmPopup.style.display="none"; if(confirmCallback) confirmCallback(); confirmCallback=null;};
-confirmNo.onclick=()=>{confirmPopup.style.display="none"; confirmCallback=null;};
-document.addEventListener("keydown",e=>{if(confirmPopup.style.display==="block" && e.key==="Enter") confirmYes.click(); if(confirmPopup.style.display==="block" && e.key==="Escape") confirmNo.click();});
+          wrapperEl.appendChild(childrenEl);
+          fragment.appendChild(wrapperEl);
 
-// ===== Download =====
-function downloadFile(pathKeys){
-  db.ref("explorer").once("value").then(snap=>{
-    let obj=snap.val(); for(const k of pathKeys) obj=obj[k].children?obj[k].children:obj[k];
-    const blob=new Blob([obj.content||""],{type:"text/plain;charset=utf-8"});
-    saveAs(blob,obj.name); showToast("Downloaded: "+obj.name,2000);
-  });
-}
-function downloadFolder(pathKeys){
-  db.ref("explorer").once("value").then(snap=>{
-    let folder=snap.val(); for(const k of pathKeys) folder=folder[k].children?folder[k].children:folder[k];
-    function downloadAll(obj,parent=""){
-      for(const key in obj){
-        const item=obj[key];
-        if(item.type==="file"){ const blob=new Blob([item.content||""],{type:"text/plain;charset=utf-8"}); saveAs(blob,parent?parent+"/"+item.name:item.name); showToast("Downloaded: "+(parent?parent+"/"+item.name:item.name),2000);}
-        else if(item.type==="folder") downloadAll(item.children||{}, parent?parent+"/"+item.name:item.name);
+
+        } else if (data.type === "file") {
+          const itemEl = document.createElement("div");
+          itemEl.className = "item file-item";
+          itemEl.setAttribute('data-path', path + "/" + key); 
+          itemEl.setAttribute('data-type', 'file'); 
+
+          if (currentFilePath === path + "/" + key) {
+            itemEl.classList.add('selected');
+          }
+          
+          const iconEl = document.createElement('span');
+          iconEl.innerHTML = getFileIcon(data.name);
+
+          const nameEl = document.createElement("div");
+          nameEl.className = "name";
+          nameEl.setAttribute("spellcheck", "false");
+          nameEl.textContent = data.name;
+          
+          itemEl.appendChild(iconEl);
+          itemEl.appendChild(nameEl);
+
+          itemEl.onclick = () => {
+            document.querySelectorAll('.item.selected').forEach(el => el.classList.remove('selected'));
+            itemEl.classList.add('selected');
+            openFile(path + "/" + key, data);
+          }
+          
+          fragment.appendChild(itemEl);
+        }
+      }
+      parentEl.appendChild(fragment);
+    }
+
+    // Fungsi untuk membuka/menutup folder
+    function toggleFolder(path, iconEl, childrenEl) {
+      expandedFolders[path] = !expandedFolders[path];
+      const isOpen = expandedFolders[path];
+      
+      iconEl.className = isOpen ? "fas fa-folder-open" : "fas fa-folder";
+      
+      childrenEl.style.display = isOpen ? "block" : "none";
+    }
+
+    // Fungsi untuk memulai proses rename
+    function startRename(nameEl, path, type) {
+        if (renamingElement) {
+            renamingElement.blur();
+        }
+        
+        renamingElement = nameEl;
+        
+        nameEl.contentEditable = "true";
+        nameEl.focus();
+        
+        const range = document.createRange();
+        range.selectNodeContents(nameEl);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+        nameEl.onkeydown = e => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                nameEl.blur();
+                saveRename(nameEl, path, type);
+            }
+            if (e.key === "Escape") {
+                e.preventDefault();
+                nameEl.contentEditable = "false";
+                renamingElement = null;
+                db.ref("explorer").once("value", snap => {
+                    renderTree(snap.val() || {}, treeEl, "");
+                });
+            }
+        };
+        
+        nameEl.onblur = () => {
+            if (nameEl.contentEditable === "true") {
+                saveRename(nameEl, path, type);
+            }
+        };
+    }
+
+    // Fungsi untuk menyimpan hasil rename
+    function saveRename(nameEl, path, type) {
+        const newName = nameEl.innerText.trim() || `Untitled ${type === 'folder' ? 'Folder' : 'File'}`;
+        
+        db.ref("explorer" + path + "/name").set(newName).then(() => {
+            nameEl.contentEditable = "false";
+            renamingElement = null;
+            showToast(`${type === 'folder' ? 'Folder' : 'File'} berhasil diubah namanya.`);
+        }).catch(err => {
+            showToast("Gagal mengubah nama!");
+            console.error("Firebase rename error:", err);
+            nameEl.contentEditable = "false";
+            renamingElement = null;
+        });
+    }
+
+    // Fungsi untuk membuka file di editor
+    function openFile(path, data) {
+      currentFilePath = path; 
+      currentFileName = data.name || "untitled";
+      fileNameEl.innerHTML = getFileIcon(currentFileName) + ` ${currentFileName}`;
+      
+      saveBtn.disabled = false;
+      downloadBtn.disabled = false; 
+      codeArea.disabled = false; // Aktifkan textarea
+      
+      const raw = data.content || "";
+      const formatted = beautifyString(raw, currentFileName);
+      
+      // Mengisi textarea
+      codeArea.value = formatted;
+      codeArea.focus();
+    }
+
+    // Fungsi untuk membersihkan editor
+    function clearEditor() {
+      currentFilePath = null;
+      currentFileName = null;
+      fileNameEl.innerHTML = '<i class="fas fa-info-circle"></i> Pilih file untuk mulai mengedit';
+      
+      codeArea.value = "";
+      codeArea.disabled = true; // Non-aktifkan textarea
+      
+      saveBtn.disabled = true;
+      downloadBtn.disabled = true; 
+      document.querySelectorAll('.item.selected').forEach(el => el.classList.remove('selected'));
+    }
+
+    // Beautify/Formatter
+    function beautifyString(text, filename) {
+      if (!filename || text.trim() === "") return text;
+      const lower = filename.toLowerCase();
+      try {
+        if (lower.endsWith(".html") || lower.endsWith(".htm")) {
+          return html_beautify(text, {
+            indent_size: 2,
+            end_with_newline: false
+          });
+        } else if (lower.endsWith(".js") || lower.endsWith(".json")) {
+          return js_beautify(text, {
+            indent_size: 2
+          });
+        } else if (lower.endsWith(".css")) {
+          return css_beautify(text, {
+            indent_size: 2
+          });
+        } else {
+          return text;
+        }
+      } catch (e) {
+        console.error("Beautify error, returning raw text:", e);
+        return text;
       }
     }
-    downloadAll(folder);
-  });
-}
 
-// ===== Add Folder =====
-document.getElementById("addFolderBtn").onclick=()=>{db.ref("explorer").push({type:"folder",name:"New Folder",children:{}});};
+    // ===================================
+    // LOGIKA DOWNLOAD
+    // ===================================
 
-// ===== Firebase Listener =====
-db.ref("explorer").on("value",snap=>{cacheExplorer=snap.val()||{}; renderTree(cacheExplorer,treeEl,[]);});
-</script>
+    // Helper untuk memicu download
+    function triggerDownload(content, filename, mimeType = 'text/plain') {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        // Memaksa klik
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    // Download File Tunggal (dari editor)
+    downloadBtn.onclick = () => downloadFile(currentFileName, codeArea.value);
+    
+    function getMimeType(filename) {
+        const mimeTypeMap = {
+            'html': 'text/html',
+            'css': 'text/css',
+            'js': 'application/javascript',
+            'json': 'application/json',
+            'txt': 'text/plain'
+        };
+        const ext = filename.split('.').pop().toLowerCase();
+        return mimeTypeMap[ext] || 'application/octet-stream';
+    }
+
+    function downloadFile(name, content) {
+        if (!name || !content) return;
+        triggerDownload(content, name, getMimeType(name));
+        showToast(`File "${name}" berhasil diunduh!`);
+    }
+
+    // Download Folder (Download Semua File di Dalamnya Satu Per Satu)
+    function downloadFolderMassal(folderData, folderName) {
+        showToast(`Mulai mengunduh file dari folder "${folderName}" secara massal...`, 3000);
+        
+        let fileCount = 0;
+
+        function traverseAndDownload(obj) {
+            for (const key in obj) {
+                const data = obj[key];
+                if (!data) continue;
+
+                if (data.type === "file") {
+                    const filename = data.name || "untitled.txt";
+                    const content = data.content || "";
+                    downloadFile(filename, content);
+                    fileCount++;
+                } else if (data.type === "folder" && data.children) {
+                    // Masuk ke sub-folder
+                    traverseAndDownload(data.children);
+                }
+            }
+        }
+        
+        // Asumsi data folder di root treeDataCache
+        traverseAndDownload(folderData.children);
+        
+        if (fileCount > 0) {
+            showToast(`${fileCount} file dari folder "${folderName}" berhasil diunduh!`);
+        } else {
+             showToast(`Tidak ada file di folder "${folderName}" untuk diunduh.`);
+        }
+    }
+
+    // ===================================
+    // LOGIKA CONTEXT MENU
+    // ===================================
+    
+    document.addEventListener('click', () => {
+        contextMenu.style.display = 'none';
+    });
+
+    treeEl.addEventListener('contextmenu', function(e) {
+        const itemEl = e.target.closest('.item');
+        if (!itemEl) {
+            contextMenu.style.display = 'none';
+            return;
+        }
+
+        e.preventDefault(); 
+        
+        const path = itemEl.getAttribute('data-path');
+        const type = itemEl.getAttribute('data-type');
+        const nameEl = itemEl.querySelector('.name');
+        const name = nameEl.textContent;
+
+        if (!path || !type || !nameEl) return;
+
+        contextMenu.innerHTML = '';
+        
+        // 1. Opsi Download
+        const downloadItem = document.createElement('div');
+        downloadItem.className = 'context-item';
+        downloadItem.innerHTML = `<i class="fas fa-download"></i> Download ${type === 'folder' ? 'Semua File' : 'File'}`;
+        downloadItem.onclick = () => {
+            contextMenu.style.display = 'none';
+            if (type === 'file') {
+                // Untuk file: ambil konten terbaru dari editor atau cache
+                const content = (currentFilePath === path) ? codeArea.value : null;
+                if (content !== null) {
+                    downloadFile(name, content);
+                } else {
+                    db.ref("explorer" + path).once("value").then(snap => {
+                        const data = snap.val();
+                        if (data && data.content) {
+                           downloadFile(data.name, data.content);
+                        } else {
+                           showToast("Gagal mengambil konten file untuk diunduh!");
+                        }
+                    });
+                }
+            } else {
+                // Untuk folder: gunakan fungsi massal
+                // Cari data folder di cache menggunakan key pertama di path
+                const folderKey = path.split('/')[1]; 
+                const folderData = treeDataCache[folderKey];
+                if (folderData) {
+                    downloadFolderMassal(folderData, name);
+                } else {
+                    showToast("Gagal menemukan data folder di cache!");
+                }
+            }
+        };
+        contextMenu.appendChild(downloadItem);
+
+        // 2. Opsi Rename
+        const renameItem = document.createElement('div');
+        renameItem.className = 'context-item';
+        renameItem.innerHTML = '<i class="fas fa-pen"></i> Ubah Nama';
+        renameItem.onclick = () => {
+            contextMenu.style.display = 'none';
+            startRename(nameEl, path, type);
+        };
+        contextMenu.appendChild(renameItem);
+
+        // 3. Opsi Delete
+        const deleteItem = document.createElement('div');
+        deleteItem.className = 'context-item delete-action';
+        deleteItem.innerHTML = '<i class="fas fa-trash-alt"></i> Hapus';
+        deleteItem.onclick = () => {
+            contextMenu.style.display = 'none';
+            showPopup(`Yakin ingin menghapus ${type === 'folder' ? 'folder' : 'file'} "${name}"?`, () => {
+                db.ref("explorer" + path).remove();
+                if (currentFilePath === path) {
+                    clearEditor();
+                }
+            });
+        };
+        contextMenu.appendChild(deleteItem);
+
+        // Tampilkan menu
+        contextMenu.style.left = e.clientX + 'px';
+        contextMenu.style.top = e.clientY + 'px';
+        contextMenu.style.display = 'block';
+    });
+
+    // ===================================
+    // LOGIKA SAVE & FIREBASE
+    // ===================================
+
+    // Save
+    saveBtn.onclick = () => saveFile();
+
+    function saveFile() {
+      if (!currentFilePath || !currentFileName || saveBtn.disabled) return;
+      saveBtn.disabled = true; 
+      
+      const rawContent = codeArea.value;
+      
+      const formatted = beautifyString(rawContent, currentFileName);
+      
+      codeArea.value = formatted; // Update textarea dengan yang sudah di-format
+      
+      db.ref("explorer" + currentFilePath + "/content").set(formatted)
+        .then(() => {
+          showToast("Berhasil disimpan!");
+          saveBtn.disabled = false;
+        })
+        .catch((err) => {
+          showToast("Gagal menyimpan!");
+          console.error("Firebase save error:", err);
+          saveBtn.disabled = false;
+        });
+    }
+
+    // Popup confirm
+    function showPopup(msg, action) {
+      popupMsg.textContent = msg;
+      popupOverlay.style.display = "flex";
+      popupAction = action;
+      popupOverlay.setAttribute("aria-hidden", "false");
+      popupNo.focus(); 
+    }
+    
+    // Konfirmasi Ya
+    popupYes.onclick = () => {
+      if (popupAction) popupAction();
+      closePopup();
+    };
+    
+    // Konfirmasi Tidak / Batal
+    popupNo.onclick = closePopup;
+    popupOverlay.onclick = e => {
+      if (e.target === popupOverlay) closePopup();
+    };
+
+    function closePopup() {
+      popupOverlay.style.display = "none";
+      popupOverlay.setAttribute("aria-hidden", "true");
+      popupAction = null;
+    }
+
+    // Toast
+    function showToast(msg, ms = 2000) {
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, ms);
+    }
+
+    // Tambah folder (root)
+    document.getElementById("addFolderBtn").onclick = () => {
+      db.ref("explorer").push({
+        type: "folder",
+        name: "New Folder",
+        children: {}
+      });
+    };
+    
+    // Tambah file (root)
+    addFileBtnRoot.onclick = () => {
+        db.ref("explorer").push({
+            type: "file",
+            name: "new_file.txt",
+            content: ""
+        });
+    };
+
+
+    // Render tree on DB changes
+    db.ref("explorer").on("value", snap => {
+      treeDataCache = snap.val() || {}; // Update cache
+      renderTree(treeDataCache, treeEl, "");
+    });
+    
+  </script>
 </body>
+
 </html>
