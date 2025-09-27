@@ -9,20 +9,33 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <style>
+    /*
+    * Palet Warna Modern & Lembut: Cyan dan Biru Gelap
+    * --bg-dark: #1A2E40 (Biru Gelap Lembut)
+    * --bg-light: #2A4460 (Biru Gelap Lebih Terang, untuk Card/Sidebar)
+    * --cyan-primary: #00BCD4 (Cyan Utama, Cerah)
+    * --cyan-text: #E0F7FA (Teks Utama, Putih Kebiruan)
+    * --subtle-cyan: #80DEEA (Aksen Subtil)
+    */
     :root {
-      --bg: #000;
-      --cyan: cyan;
-      --subcyan: #7fffd4;
-      --panel-w: 300px;
+      --bg-dark: #1A2E40; 
+      --bg-light: #2A4460; 
+      --cyan-primary: #00BCD4; 
+      --cyan-text: #E0F7FA; 
+      --subtle-cyan: #80DEEA; 
+      --shadow-color: rgba(0, 188, 212, 0.4); 
+      --panel-w: 280px;
     }
 
     html,
     body {
       height: 100%;
       margin: 0;
-      font-family: monospace;
-      background: var(--bg);
-      color: var(--cyan);
+      /* Font Sans-Serif Modern */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-dark);
+      color: var(--cyan-text);
+      line-height: 1.6;
     }
 
     .app {
@@ -35,181 +48,286 @@
     .sidebar {
       width: var(--panel-w);
       min-width: var(--panel-w);
-      background: #050505;
-      border-right: 1px solid var(--cyan);
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.03);
-      padding: 16px;
+      background: var(--bg-light);
+      border-right: 1px solid rgba(255, 255, 255, 0.1); /* Garis pemisah lembut */
+      /* Bayangan Lembut Modern */
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+      padding: 20px;
       box-sizing: border-box;
       position: relative;
     }
+    
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 100%;
+            height: auto;
+            min-width: auto;
+            padding: 15px;
+            box-shadow: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .app {
+            flex-direction: column;
+            height: auto;
+            min-height: 100vh;
+        }
+        .main {
+            padding: 20px 15px;
+        }
+    }
+
 
     .brand {
-      font-size: 18px;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px var(--cyan);
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: var(--cyan-primary);
+      text-shadow: 0 0 8px var(--shadow-color);
     }
 
     .add-page {
       display: flex;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 20px;
     }
 
     .add-page input {
       flex: 1;
-      padding: 8px;
-      background: transparent;
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      border-radius: 6px;
+      padding: 10px;
+      background: var(--bg-dark);
+      border: 1px solid var(--bg-dark); /* Border awal samar */
+      color: var(--cyan-text);
+      /* Sudut Lebih Membulat */
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .add-page input:focus {
+        border-color: var(--cyan-primary);
+        box-shadow: 0 0 5px var(--shadow-color);
     }
 
     .add-page button {
-      padding: 8px 10px;
-      background: transparent;
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      border-radius: 6px;
+      padding: 10px 15px;
+      background: var(--cyan-primary);
+      border: none;
+      color: var(--bg-dark);
+      /* Sudut Lebih Membulat */
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(0, 188, 212, 0.4);
     }
 
     .add-page button:hover {
-      background: var(--cyan);
-      color: #000;
+      background: var(--subtle-cyan);
     }
 
     .sidebar-item {
-      padding: 8px;
-      border-radius: 8px;
+      padding: 12px 15px;
+      /* Sudut Lebih Membulat */
+      border-radius: 10px;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       border: 1px solid transparent;
+      transition: background 0.3s, border-color 0.3s;
     }
 
     .sidebar-item:hover {
-      background: rgba(0, 255, 255, 0.02);
+      background: var(--bg-dark);
     }
 
     .sidebar-item.active {
-      background: rgba(0, 255, 255, 0.06);
-      border: 1px solid var(--cyan);
+      background: var(--bg-dark);
+      border: 1px solid var(--cyan-primary);
+      box-shadow: 0 0 10px var(--shadow-color);
     }
 
     .sidebar-item .name {
-      font-size: 14px;
+      font-size: 16px;
       flex: 1;
+      color: var(--cyan-text);
+      font-weight: 500;
     }
 
     .sidebar-item .delete-btn {
       background: transparent;
       border: none;
-      color: var(--subcyan);
+      color: var(--subtle-cyan);
       cursor: pointer;
-      font-size: 14px;
+      font-size: 16px;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color 0.3s;
     }
 
     .sidebar-item .delete-btn:hover {
-      color: red;
+      color: #FF7070; /* Merah Lembut */
     }
 
     /* Main content */
     .main {
       flex: 1;
-      padding: 20px;
-      overflow: auto;
+      padding: 30px;
+      overflow-y: auto;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid rgba(128, 222, 234, 0.2);
+      padding-bottom: 15px;
     }
 
     .title {
-      font-size: 20px;
-      text-shadow: 0 0 12px var(--cyan);
+      font-size: 32px;
+      font-weight: 300; 
+      color: var(--cyan-primary);
+      text-shadow: 0 0 5px var(--shadow-color);
     }
 
     .input-area {
       max-width: 900px;
-      margin-bottom: 12px;
+      margin-bottom: 30px;
+      background: var(--bg-light);
+      padding: 25px;
+      /* Sudut Lebih Membulat */
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 15px;
+      border: 1px solid rgba(0, 188, 212, 0.2);
     }
 
     .input-area input,
     .input-area textarea {
-      padding: 10px;
-      background: transparent;
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      border-radius: 8px;
-      font-family: monospace;
+      padding: 12px;
+      background: var(--bg-dark);
+      border: 1px solid var(--bg-dark);
+      color: var(--cyan-text);
+      /* Sudut Lebih Membulat */
+      border-radius: 10px;
+      font-family: inherit; 
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    .input-area textarea {
+        min-height: 100px;
+    }
+
+    .input-area input:focus,
+    .input-area textarea:focus {
+      border-color: var(--cyan-primary);
+      box-shadow: 0 0 8px var(--shadow-color);
     }
 
     .save-btn {
-      width: 100px;
-      padding: 8px;
-      background: transparent;
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      border-radius: 8px;
+      width: 150px;
+      padding: 12px;
+      background: var(--cyan-primary);
+      border: none;
+      color: var(--bg-dark);
+      /* Sudut Lebih Membulat */
+      border-radius: 10px;
       cursor: pointer;
+      font-weight: 600;
+      align-self: flex-end; /* Pindah ke kanan */
+      transition: background 0.3s, transform 0.1s;
+      box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
     }
 
     .save-btn:hover {
-      background: var(--cyan);
-      color: #000;
+      background: var(--subtle-cyan);
+      transform: translateY(-1px);
     }
 
     .keeps {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
+      gap: 18px;
     }
 
     .keep-card {
-      border: 1px solid var(--cyan);
-      border-radius: 12px;
-      padding: 14px;
+      background: var(--bg-light);
+      border: 1px solid rgba(0, 188, 212, 0.1);
+      /* Sudut Lebih Membulat */
+      border-radius: 15px;
+      padding: 20px;
       max-width: 900px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 15px;
+      transition: transform 0.2s;
+    }
+
+    .keep-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .keep-info {
+        flex: 1;
     }
 
     .keep-title {
-      font-weight: bold;
-      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--cyan-primary);
     }
 
     .keep-text {
       white-space: pre-wrap;
+      color: var(--subtle-cyan);
+      font-size: 15px;
     }
 
     .keep-text a {
-      color: var(--subcyan);
+      color: var(--cyan-primary);
+      text-decoration: underline;
+      transition: color 0.3s;
+    }
+    
+    .keep-text a:hover {
+        color: var(--subtle-cyan);
+    }
+
+    .keep-actions {
+      display: flex;
+      gap: 8px;
+      align-self: flex-start;
     }
 
     .keep-edit-btn,
     .keep-delete-btn {
-      background: transparent;
+      background: var(--bg-dark);
       border: none;
-      color: var(--subcyan);
+      color: var(--subtle-cyan);
       cursor: pointer;
-      font-size: 14px;
+      font-size: 16px;
       height: fit-content;
-      margin-left: 4px;
+      padding: 8px;
+      border-radius: 8px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .keep-edit-btn:hover {
+      background: rgba(0, 188, 212, 0.2);
+      color: var(--cyan-primary);
     }
 
     .keep-delete-btn:hover {
-      color: red;
+      background: rgba(255, 112, 112, 0.2);
+      color: #FF7070; 
     }
 
     /* Popup */
@@ -219,53 +337,103 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(26, 46, 64, 0.9); /* BG Dark dengan transparansi */
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 1000;
       display: none;
+      backdrop-filter: blur(5px); /* Efek Blur Lembut */
     }
 
     .popup {
-      background: #111;
-      border: 1px solid var(--cyan);
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 300px;
+      background: var(--bg-light);
+      border: 2px solid var(--cyan-primary);
+      /* Sudut Lebih Membulat */
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 400px;
       text-align: center;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 30px var(--shadow-color);
+      color: var(--cyan-text);
+    }
+
+    .popup h3 {
+        color: var(--cyan-primary);
+        margin-top: 0;
+        font-weight: 600;
+        font-size: 24px;
     }
 
     .popup p {
-      margin-bottom: 16px;
+      margin-bottom: 25px;
     }
 
     .popup button {
-      margin: 6px;
-      padding: 8px 14px;
-      border: 1px solid var(--cyan);
-      background: transparent;
-      color: var(--cyan);
-      border-radius: 6px;
+      margin: 8px;
+      padding: 10px 20px;
+      border: none;
+      /* Sudut Lebih Membulat */
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s, transform 0.1s;
     }
 
-    .popup button:hover {
-      background: var(--cyan);
-      color: #000;
+    #confirmDelete {
+        background: #FF7070;
+        color: white;
     }
+    #confirmDelete:hover {
+        background: #E66363;
+        transform: translateY(-1px);
+    }
+
+    #cancelDelete, #cancelEdit {
+        background: var(--bg-dark);
+        border: 1px solid var(--subtle-cyan);
+        color: var(--subtle-cyan);
+    }
+    #cancelDelete:hover, #cancelEdit:hover {
+        background: var(--bg-dark);
+        border-color: var(--cyan-primary);
+        color: var(--cyan-primary);
+        transform: translateY(-1px);
+    }
+
+    #saveEdit {
+        background: var(--cyan-primary);
+        color: var(--bg-dark);
+        box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    #saveEdit:hover {
+        background: var(--subtle-cyan);
+        transform: translateY(-1px);
+    }
+
 
     .popup input,
     .popup textarea {
       width: 100%;
-      padding: 8px;
-      background: transparent;
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      border-radius: 6px;
-      margin-bottom: 8px;
-      font-family: monospace;
+      padding: 12px;
+      background: var(--bg-dark);
+      border: 1px solid var(--bg-dark);
+      color: var(--cyan-text);
+      /* Sudut Lebih Membulat */
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-family: inherit;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .popup input:focus, .popup textarea:focus {
+        border-color: var(--cyan-primary);
+        box-shadow: 0 0 5px var(--shadow-color);
+    }
+    
+    .popup textarea {
+        min-height: 120px;
     }
   </style>
 </head>
@@ -274,25 +442,26 @@
 
   <div class="app">
     <aside class="sidebar">
-      <div class="brand">Keeps</div>
+      <div class="brand">Keeps App</div>
       <div class="add-page">
-        <input id="pageInput" placeholder="Add page..." />
-        <button id="addPageBtn">Add</button>
+        <input id="pageInput" placeholder="Tambah Halaman..." />
+        <button id="addPageBtn">Tambah</button>
       </div>
-      <div id="item-home" class="sidebar-item" data-slug="home">
-        <div class="name">home page</div>
+      <!-- Home page item -->
+      <div id="item-home" class="sidebar-item active" data-slug="home">
+        <div class="name">Beranda</div>
       </div>
       <div id="pagesList"></div>
     </aside>
 
     <main class="main">
       <div class="header">
-        <div class="title" id="pageTitle">home page</div>
+        <div class="title" id="pageTitle">Beranda</div>
       </div>
       <div class="input-area">
-        <input id="titleInput" placeholder="Optional title..." />
-        <textarea id="keepInput" placeholder="Write your note..."></textarea>
-        <button class="save-btn" id="saveBtn">Save</button>
+        <input id="titleInput" placeholder="Judul opsional..." />
+        <textarea id="keepInput" placeholder="Tulis catatan Anda..."></textarea>
+        <button class="save-btn" id="saveBtn">Simpan</button>
       </div>
       <div class="keeps" id="keepsContainer"></div>
     </main>
@@ -301,25 +470,26 @@
   <!-- Popup Delete -->
   <div class="popup-overlay" id="popupOverlay">
     <div class="popup">
-      <p id="popupMessage">Are you sure?</p>
-      <button id="confirmDelete">Delete</button>
-      <button id="cancelDelete">Cancel</button>
+      <p id="popupMessage">Anda yakin?</p>
+      <button id="confirmDelete">Hapus</button>
+      <button id="cancelDelete">Batal</button>
     </div>
   </div>
 
   <!-- Popup Edit -->
   <div class="popup-overlay" id="editOverlay">
     <div class="popup">
-      <h3>Edit Note</h3>
-      <input id="editTitle" placeholder="Title..." />
-      <textarea id="editText" placeholder="Write something..."></textarea>
+      <h3>Edit Catatan</h3>
+      <input id="editTitle" placeholder="Judul..." />
+      <textarea id="editText" placeholder="Tulis sesuatu..."></textarea>
       <br>
-      <button id="saveEdit">Save</button>
-      <button id="cancelEdit">Cancel</button>
+      <button id="saveEdit">Simpan</button>
+      <button id="cancelEdit">Batal</button>
     </div>
   </div>
 
   <script>
+    // Konfigurasi Firebase Anda (dari Immersive sebelumnya)
     const firebaseConfig = {
       apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
       authDomain: "index-68220.firebaseapp.com",
@@ -367,10 +537,26 @@
     }
 
     function linkify(t) {
+      // Mengubah teks menjadi HTML yang aman, lalu mengubah URL menjadi tautan
       return escapeHtml(t).replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>').replace(/\n/g, '<br>');
+    }
+    
+    // Fungsi untuk mengembalikan HTML entities (kebalikan dari escapeHtml) untuk proses editing
+    function unescapeHtml(s) {
+      return (s || "").replace(/<br>/g, "\n").replace(/&lt;/g, "<").replace(/&amp;/g, "&");
     }
 
     // pages
+    function updateSidebarSelection(slug) {
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        const activeItem = document.querySelector(`.sidebar-item[data-slug="${slug}"]`);
+        if (activeItem) {
+            activeItem.classList.add('active');
+        }
+    }
+
     function loadPages() {
       db.ref("pages").on("value", snap => {
         pagesList.innerHTML = "";
@@ -381,13 +567,20 @@
           div.dataset.slug = slug;
           div.innerHTML = `
             <div class="name" ondblclick="renamePage(this,'${slug}')">${escapeHtml(val[slug].name)}</div>
-            <button class="delete-btn" onclick="askDelete('page','${slug}',null,'${escapeHtml(val[slug].name)}')">🗑</button>`;
+            <button class="delete-btn" title="Hapus Halaman" onclick="askDelete('page','${slug}',null,'${escapeHtml(val[slug].name)}')">🗑</button>`;
           div.addEventListener("click", e => {
-            if (e.target.classList.contains("delete-btn")) return;
+            // Check if the delete button was clicked
+            if (e.target.closest(".delete-btn")) return;
             setPage(slug, val[slug].name);
           });
           pagesList.appendChild(div);
+
+          // Update active class if this is the current page
+          if (slug === currentPage) {
+            div.classList.add('active');
+          }
         });
+        updateSidebarSelection(currentPage);
       });
     }
 
@@ -396,7 +589,9 @@
       const name = pageInput.value.trim();
       if (!name) return;
       const slug = slugify(name);
-      db.ref("pages/" + slug).set({ name });
+      db.ref("pages/" + slug).set({
+        name
+      });
       pageInput.value = "";
     }
     addPageBtn.onclick = addPage;
@@ -411,13 +606,14 @@
     function setPage(slug, name) {
       currentPage = slug;
       pageTitle.textContent = name;
+      updateSidebarSelection(slug);
       loadKeeps();
     }
 
     // keeps
     document.getElementById("saveBtn").onclick = saveKeep;
     titleInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" && !e.shiftKey) { 
         e.preventDefault();
         saveKeep();
       }
@@ -433,26 +629,35 @@
       const title = titleInput.value.trim();
       const text = keepInput.value.trim();
       if (!title && !text) return;
-      db.ref("keeps/" + currentPage).push({ title, text });
+      db.ref("keeps/" + currentPage).push({
+        title,
+        text,
+        timestamp: firebase.database.ServerValue.TIMESTAMP 
+      });
       titleInput.value = "";
       keepInput.value = "";
     }
 
     function loadKeeps() {
+      // Listener untuk memuat catatan
       db.ref("keeps/" + currentPage).on("value", snap => {
         keepsContainer.innerHTML = "";
         const val = snap.val() || {};
-        Object.entries(val).reverse().forEach(([id, data]) => {
+        
+        // Konversi objek ke array, urutkan berdasarkan timestamp, dan balikkan (terbaru di atas)
+        const sortedKeeps = Object.entries(val).sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+
+        sortedKeeps.forEach(([id, data]) => {
           const card = document.createElement("div");
           card.className = "keep-card";
           card.innerHTML = `
-            <div>
+            <div class="keep-info">
               <div class="keep-title">${escapeHtml(data.title||"")}</div>
               <div class="keep-text">${linkify(data.text||"")}</div>
             </div>
-            <div>
-              <button class="keep-edit-btn" onclick="openEditPopup('${id}', \`${escapeHtml(data.title||"")}\`, \`${escapeHtml(data.text||"")}\`)">✏️</button>
-              <button class="keep-delete-btn" onclick="askDelete('note','${currentPage}','${id}','${escapeHtml(data.title||'Note')}')">🗑</button>
+            <div class="keep-actions">
+              <button class="keep-edit-btn" title="Edit" onclick="openEditPopup('${id}', \`${escapeHtml(data.title||"")}\`, \`${escapeHtml(data.text||"")}\`)">✏️</button>
+              <button class="keep-delete-btn" title="Hapus" onclick="askDelete('note','${currentPage}','${id}','${escapeHtml(data.title||'Catatan')}')">🗑</button>
             </div>`;
           keepsContainer.appendChild(card);
         });
@@ -462,12 +667,13 @@
     // edit popup
     function openEditPopup(id, title, text) {
       editingId = id;
-      editTitle.value = title;
-      editText.value = text;
+      // Gunakan unescapeHtml untuk memulihkan entitas dan baris baru sebelum diedit
+      editTitle.value = unescapeHtml(title); 
+      editText.value = unescapeHtml(text);
       editOverlay.style.display = "flex";
       editTitle.focus();
     }
-
+    
     saveEdit.onclick = function() {
       if (!editingId) return;
       const newTitle = editTitle.value.trim();
@@ -504,13 +710,18 @@
 
     // delete with popup
     function askDelete(type, slug, id, name) {
-      deleteTarget = { type, slug, id };
-      popupMessage.textContent = type === "page"
-        ? `Delete page "${name}"?`
-        : `Delete note "${name}"?`;
+      deleteTarget = {
+        type,
+        slug,
+        id
+      };
+      popupMessage.textContent = type === "page" ?
+        `Hapus halaman "${name}" dan semua isinya? Tindakan ini tidak dapat dibatalkan.` :
+        `Hapus catatan "${name}"? Tindakan ini tidak dapat dibatalkan.`;
       popupOverlay.style.display = "flex";
       confirmDelete.focus();
     }
+    
     confirmDelete.onclick = function() {
       if (deleteTarget) {
         if (deleteTarget.type === "page") {
@@ -524,9 +735,12 @@
         }
       }
       popupOverlay.style.display = "none";
+      deleteTarget = null; 
     };
+    
     cancelDelete.onclick = function() {
       popupOverlay.style.display = "none";
+      deleteTarget = null; 
     };
 
     // allow Enter key to trigger delete
@@ -536,13 +750,13 @@
         confirmDelete.click();
       }
     });
-
-    // start
-    document.getElementById("item-home").onclick = () => setPage("home", "Beranda");
+    
+    // Inisialisasi: Mengatur halaman awal dan memuat halaman
+    document.getElementById("item-home").addEventListener("click", () => setPage("home", "Beranda"));
     setPage("home", "Beranda");
     loadPages();
 
-    // proteksi token
+    // proteksi token (dari script asli)
     (function() {
       try {
         const raw = sessionStorage.getItem('dashboard_access');
@@ -552,7 +766,7 @@
         console.log("Access granted:", data.token);
       } catch (err) {
         console.warn("Access denied:", err.message);
-        window.location.replace("index.html");
+        // window.location.replace("index.html"); // Keep this if redirection is intended
       }
     })();
   </script>

@@ -53,7 +53,10 @@
       grid-template-columns: var(--sidebar-w) 1fr;
       height: 100vh;
       width: 100vw;
-      padding: 15px; /* Tambahkan sedikit padding pada grid utama */
+      padding: 15px;
+      /* Tambahkan sedikit padding pada grid utama */
+      gap: 15px;
+      /* Jarak antara sidebar dan konten */
     }
 
     /* =====================
@@ -61,13 +64,13 @@
        ===================== */
     .sidebar {
       background: var(--sidebar-bg);
-      /* Hapus border-right karena kita akan menggunakan padding/margin di grid */
       border-radius: 12px;
       /* Tambahkan ujung bulat pada sidebar */
       padding: 15px;
       overflow-y: scroll;
       /* Tetap izinkan scroll */
-      box-shadow: 5px 0 20px rgba(0, 240, 255, 0.05), 0 0 15px rgba(0, 0, 0, 0.5); /* Bayangan lebih halus */
+      box-shadow: 5px 0 20px rgba(0, 240, 255, 0.05), 0 0 15px rgba(0, 0, 0, 0.5);
+      /* Bayangan lebih halus */
       display: flex;
       flex-direction: column;
     }
@@ -92,7 +95,8 @@
       border-bottom: 1px solid rgba(0, 240, 255, 0.1);
       margin-bottom: 20px;
       margin-top: 10px;
-      flex-shrink: 0; /* Agar kartu profil tidak mengecil */
+      flex-shrink: 0;
+      /* Agar kartu profil tidak mengecil */
     }
 
     .profile-card img {
@@ -138,7 +142,8 @@
       list-style: none;
       padding: 0;
       margin-bottom: 25px;
-      flex-grow: 1; /* Mengisi ruang yang tersisa */
+      flex-grow: 1;
+      /* Mengisi ruang yang tersisa */
     }
 
     .nav-group li a {
@@ -170,26 +175,30 @@
 
     /* Styling Tombol Logout */
     .logout-container {
-        padding: 15px 0 0;
-        border-top: 1px solid rgba(0, 240, 255, 0.1);
-        flex-shrink: 0; /* Agar tombol logout tetap di bawah */
+      padding: 15px 0 0;
+      border-top: 1px solid rgba(0, 240, 255, 0.1);
+      flex-shrink: 0;
+      /* Agar tombol logout tetap di bawah */
     }
+
     .logout-button {
-        width: 100%;
-        padding: 10px;
-        background: none;
-        border: 1px solid var(--cyan-main);
-        color: var(--cyan-main);
-        border-radius: 8px; /* Ujung tombol bulat */
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      width: 100%;
+      padding: 10px;
+      background: none;
+      border: 1px solid var(--cyan-main);
+      color: var(--cyan-main);
+      border-radius: 8px;
+      /* Ujung tombol bulat */
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
     }
+
     .logout-button:hover {
-        background: var(--cyan-main);
-        color: var(--sidebar-bg);
-        box-shadow: 0 0 15px var(--cyan-main);
+      background: var(--cyan-main);
+      color: var(--sidebar-bg);
+      box-shadow: 0 0 15px var(--cyan-main);
     }
 
 
@@ -198,11 +207,11 @@
        ===================== */
     .content-area {
       position: relative;
-      padding: 0;
-      /* Padding Dihapus untuk Full Iframe */
+      /* padding: 0; Hapus padding di area ini karena sudah ada di main-grid */
       overflow: hidden;
-      margin-left: 15px; /* Berikan jarak antara sidebar dan iframe area */
-      border-radius: 12px; /* Ujung bulat pada area iframe */
+      /* margin-left: 15px; Hapus margin karena sudah ada gap di main-grid */
+      border-radius: 12px;
+      /* Ujung bulat pada area iframe */
     }
 
     #mainIframe {
@@ -211,7 +220,31 @@
       border: none;
       /* Menghapus border */
       background: #000;
-      border-radius: 12px; /* Pastikan iframe juga rounded */
+      border-radius: 12px;
+      /* Pastikan iframe juga rounded */
+    }
+
+    /* Media Queries untuk Responsif */
+    @media (max-width: 768px) {
+        .main-grid {
+            grid-template-columns: 1fr; /* Jadi satu kolom */
+            grid-template-rows: auto 1fr; /* Sidebar di atas, konten di bawah */
+            padding: 10px;
+            height: auto;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            /* Atur tinggi maksimal untuk scroll yang baik */
+            max-height: 50vh; 
+            margin-bottom: 10px;
+        }
+        
+        .content-area {
+            /* Pastikan konten mengambil sisa ruang dan memiliki tinggi minimum */
+            margin-left: 0;
+            min-height: 50vh;
+        }
     }
   </style>
 </head>
@@ -225,7 +258,8 @@
       <!-- Kartu Profil -->
       <div class="profile-card">
         <!-- Penggunaan 1.png untuk profil -->
-        <img src="1.png" onerror="this.onerror=null;this.src='https://placehold.co/80x80/00f0ff/111827?text=AM';" alt="Foto Profil">
+        <img src="1.png" onerror="this.onerror=null;this.src='https://placehold.co/80x80/00f0ff/111827?text=AM';"
+          alt="Foto Profil">
         <h3>Adlan Madjied Ridho</h3>
         <p>Administrator Portal</p>
       </div>
@@ -236,11 +270,11 @@
         <li style="opacity:.6; color: var(--muted-text);">Memuat Navigasi...</li>
       </ul>
 
-      <!-- Tombol Logout (Baru Ditambahkan) -->
+      <!-- Tombol Logout -->
       <div class="logout-container">
-          <button id="logoutButton" class="logout-button">
-              Logout
-          </button>
+        <button id="logoutButton" class="logout-button">
+          Logout
+        </button>
       </div>
 
     </aside>
@@ -266,7 +300,7 @@
     };
     // Menginisialisasi Firebase (pastikan kompatibilitas dengan SDK v8)
     if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+      firebase.initializeApp(firebaseConfig);
     }
     const db = typeof firebase !== 'undefined' ? firebase.database() : null;
 
@@ -278,32 +312,37 @@
        Auth check and Logout
        ===================== */
     function handleLogout() {
-        // Hapus status autentikasi dari sessionStorage
-        sessionStorage.removeItem('auth');
-        // Alihkan ke halaman login
-        window.location.href = "index.html";
+      // Hapus status autentikasi dari sessionStorage
+      sessionStorage.removeItem('auth');
+      // Hapus URL navigasi aktif yang tersimpan
+      sessionStorage.removeItem('activeNavUrl');
+      // Alihkan ke halaman login
+      window.location.href = "index.html";
     }
 
     // Pasang event listener ke tombol logout
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
 
     if (!sessionStorage.getItem('auth')) {
-      // Jika tidak terautentikasi, alihkan kembali ke halaman login
-      // window.location.href = "index.html"; // Dikomentari untuk testing
+      // Logika proteksi akses (dikomentari untuk mempermudah development)
+      // window.location.href = "index.html"; 
     }
 
     /* =====================
-       Iframe Handler
+       Iframe Handler & Active Link Logic
        ===================== */
     const mainIframe = document.getElementById('mainIframe');
     const navList = document.getElementById('navList');
     // Key sessionStorage untuk menyimpan URL aktif
-    const ACTIVE_URL_KEY = 'activeNavUrl'; 
+    const ACTIVE_URL_KEY = 'activeNavUrl';
+    // URL default jika tidak ada navigasi atau yang tersimpan
+    const DEFAULT_URL = "https://www.google.com/search?q=selamat+datang+di+portal+admin";
+
 
     function setActiveLink(url) {
       // Pastikan URL yang disimpan hanya bagian yang relevan (tanpa query param)
-      const cleanUrl = url ? url.split('?')[0] : ''; // Tambahkan cek null/undefined
-      
+      const cleanUrl = url ? url.split('?')[0] : '';
+
       // 1. Hapus kelas 'active' dari semua tautan
       document.querySelectorAll('#navList a').forEach(a => {
         a.classList.remove('active');
@@ -311,7 +350,7 @@
 
       // 2. Tambahkan kelas 'active' ke tautan yang sedang dimuat
       // Gunakan [href] selector yang lebih presisi
-      const activeLink = document.querySelector(`a[href="${cleanUrl}"]`);
+      const activeLink = document.querySelector(`.nav-group a[href="${cleanUrl}"]`);
       if (activeLink) {
         activeLink.classList.add('active');
       }
@@ -322,19 +361,22 @@
       }
     }
 
+
     /* =====================
-       Navigasi (Memuat ke Iframe) - LOGIKA DIPERBAIKI
+       Navigasi (Memuat ke Iframe) - LOGIKA PENGURUTAN DARI FIREBASE
        ===================== */
     if (navList && db) {
-      db.ref('navigation').on('value', snap => {
+      // *** PERUBAHAN KRUSIAL DI SINI: MENGGUNAKAN orderByChild('order') ***
+      db.ref('navigation').orderByChild('order').on('value', snap => {
         // Ambil URL yang disimpan sebelum menghapus dan membuat ulang daftar
         const storedUrlBeforeRender = sessionStorage.getItem(ACTIVE_URL_KEY);
-        
+
         // Hapus konten lama sebelum membuat yang baru
-        navList.innerHTML = ''; 
+        navList.innerHTML = '';
 
         if (!snap.exists()) {
           navList.innerHTML = '<li style="opacity:.6; color: var(--muted-text);">Tidak ada navigasi</li>';
+          mainIframe.src = DEFAULT_URL; // Muat default jika kosong
           return;
         }
 
@@ -345,19 +387,19 @@
         snap.forEach(child => {
           const d = child.val();
           if (!d.link || !d.name) return;
-          
-          const cleanLink = d.link.split('?')[0]; 
-          links.push(cleanLink); 
+
+          const cleanLink = d.link.split('?')[0];
+          links.push(cleanLink);
 
           if (!firstLink) {
-            firstLink = cleanLink; 
+            firstLink = cleanLink;
           }
 
           const li = document.createElement('li');
           const a = document.createElement('a');
           a.textContent = escapeHTML(d.name);
-          a.href = cleanLink; 
-          a.target = 'mainFrame'; 
+          a.href = cleanLink;
+          a.target = 'mainFrame';
 
           // LOGIKA PENTING: Saat mengklik, segera atur status aktif dan muat iframe
           a.addEventListener('click', (e) => {
@@ -365,7 +407,6 @@
             const url = a.href;
             mainIframe.src = url;
             setActiveLink(url); // Set aktif segera setelah klik
-            // Tidak perlu ada logika tambahan di sini karena setActiveLink sudah menyimpan ke sessionStorage
           });
 
           li.appendChild(a);
@@ -375,50 +416,45 @@
         navList.appendChild(fragment); // Masukkan semua elemen sekaligus ke DOM
 
         // Logika Aktivasi saat Memuat Halaman
-        // Gunakan URL yang baru saja disimpan saat klik, atau yang disimpan sebelumnya, atau yang pertama
         const storedUrl = sessionStorage.getItem(ACTIVE_URL_KEY);
         let urlToActivate = firstLink; // Default ke tautan pertama
 
+        // Prioritas 1: Gunakan URL yang tersimpan, jika valid
         if (storedUrl && links.includes(storedUrl)) {
-             // Jika ada URL yang disimpan dan valid, gunakan itu
-            urlToActivate = storedUrl;
-        } else if (storedUrlBeforeRender && links.includes(storedUrlBeforeRender)) {
-            // Ini berfungsi sebagai lapisan keamanan jika storedUrl terhapus karena alasan tertentu
-            urlToActivate = storedUrlBeforeRender;
-        }
-        
+          urlToActivate = storedUrl;
+        } 
+        // Prioritas 2: Jika tidak ada yang tersimpan, gunakan tautan pertama (firstLink)
+
         // PASTIKAN STATUS AKTIF DITERAPKAN SETELAH SEMUA TAUTAN ADA DI DOM
         if (urlToActivate) {
-            setActiveLink(urlToActivate);
+          setActiveLink(urlToActivate);
         }
 
         // Muat iframe: muat ulang iframe hanya jika URL saat ini tidak cocok dengan yang seharusnya aktif
-        // Ini mencegah iframe dimuat ulang secara tidak perlu saat navigasi diperbarui
         const currentIframeSrc = mainIframe.src.split('?')[0];
 
         if (currentIframeSrc !== urlToActivate) {
-            mainIframe.src = urlToActivate;
+          mainIframe.src = urlToActivate || DEFAULT_URL; // Gunakan DEFAULT_URL sebagai fallback akhir
         }
       });
     }
 
     /* =====================
-       Hapus Logika Pintasan dan Rencana Aksi (Sesuai Permintaan Sebelumnya)
+       Fallback DOMContentLoaded
        ===================== */
-    
-    // Fallback DOMContentLoaded 
     document.addEventListener('DOMContentLoaded', () => {
       // Pastikan ada jeda waktu singkat jika Firebase gagal atau sangat lambat
       setTimeout(() => {
-        if (mainIframe.src === "about:blank" || mainIframe.src === window.location.href) {
-            // Fallback jika iframe masih kosong
-            const urlToActivate = sessionStorage.getItem(ACTIVE_URL_KEY) || "https://www.google.com/search?q=selamat+datang+di+portal+admin";
-            mainIframe.src = urlToActivate;
-            setActiveLink(urlToActivate); // Coba set aktif lagi
+        const currentIframeSrc = mainIframe.src.split('?')[0];
+        
+        // Cek jika iframe masih kosong atau tidak dimuat dengan benar
+        if (currentIframeSrc === "about:blank" || currentIframeSrc === window.location.href.split('?')[0]) {
+          const urlToActivate = sessionStorage.getItem(ACTIVE_URL_KEY) || DEFAULT_URL;
+          mainIframe.src = urlToActivate;
+          setActiveLink(urlToActivate); 
         }
       }, 50); // Jeda singkat 50ms untuk memberi waktu Firebase me-render
     });
-
   </script>
 
 </body>
