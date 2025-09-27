@@ -18,18 +18,18 @@
   
   <style>
     /* ---------------------------------
-       MODERN LIGHT MODE STYLES (Vibrant Cyan Accent)
+       MODERN DARK MODE STYLES (Vibrant Cyan Accent + Animation)
        --------------------------------- */
     :root {
-      --bg-primary: #ffffff; /* Main Background (Editor) - White */
-      --bg-secondary: #f0f8ff; /* Sidebar/Header - Very light bluish-white */
-      --text-primary: #212121; /* Main Text - Very dark gray */
-      --text-secondary: #757575; /* Subtle Text/Icons - Medium gray */
-      --accent-color: #00ACC1; /* Vibrant Cyan/Aqua (Main Accent) */
-      --error-color: #d32f2f; /* Red for Delete */
-      --border-color: #d9e3e7; /* Subtle border - Light bluish-gray */
-      --hover-bg: rgba(0, 172, 193, 0.2); /* Vibrant Cyan hover (20% opacity for more punch) */
-      --success-color: #388e3c; /* Green for save */
+      --bg-primary: #1e1e1e; /* Main Background (Editor) -> Hampir hitam */
+      --bg-secondary: #252526; /* Sidebar/Header -> Sedikit lebih terang */
+      --text-primary: #ffffff; /* Main Text -> Putih */
+      --text-secondary: #cccccc; /* Subtle Text/Icons -> Abu-abu terang */
+      --accent-color: #00FFFF; /* Vibrant Cyan (Aksen Utama) */
+      --error-color: #ff5555; /* Red for Delete */
+      --border-color: #383838; /* Subtle border -> Dark gray */
+      --hover-bg: rgba(0, 255, 255, 0.15); /* Vibrant Cyan hover (15% opacity) */
+      --success-color: #50fa7b; /* Green for success/download */
       --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --font-code: "Consolas", "Monaco", monospace;
       --radius: 6px;
@@ -52,7 +52,7 @@
     }
 
     /* ---------------------------------
-       SIDEBAR SCROLL (Independen)
+       SIDEBAR
        --------------------------------- */
     .sidebar {
       width: 250px;
@@ -63,9 +63,8 @@
       overflow-y: auto; 
       flex-shrink: 0;
       
-      /* Scrollbar Styling for light theme */
       scrollbar-width: thin;
-      scrollbar-color: #bbbbbb var(--bg-secondary);
+      scrollbar-color: #666 var(--bg-secondary);
     }
     
     .sidebar::-webkit-scrollbar {
@@ -73,7 +72,7 @@
     }
 
     .sidebar::-webkit-scrollbar-thumb {
-      background-color: #bbbbbb; 
+      background-color: #666;
       border-radius: 4px;
     }
 
@@ -131,7 +130,7 @@
     
     #codeArea::placeholder {
         color: var(--text-secondary);
-        opacity: 1;
+        opacity: 0.6;
     }
 
 
@@ -161,13 +160,17 @@
       color: var(--text-primary);
       cursor: pointer;
       font-size: 13px;
-      transition: background 0.2s, border-color 0.2s;
+      transition: background 0.2s, border-color 0.2s, transform 0.1s; /* Animasi */
     }
 
     .add-buttons button:hover {
       background: var(--hover-bg);
       border-color: var(--accent-color);
       color: var(--accent-color);
+    }
+
+    .add-buttons button:active {
+        transform: scale(0.98); /* Efek klik */
     }
 
     .tree {
@@ -186,6 +189,7 @@
       cursor: pointer;
       line-height: 1.5;
       gap: 6px;
+      transition: background 0.2s; /* Animasi */
     }
 
     .item.selected {
@@ -201,6 +205,11 @@
       color: var(--text-secondary);
       width: 14px;
       text-align: center;
+      transition: color 0.2s;
+    }
+    
+    .item.selected i {
+        color: var(--accent-color); /* Ikon ikut berwarna saat terpilih */
     }
 
     .item .name {
@@ -213,13 +222,13 @@
     }
 
     .item .name[contenteditable="true"] {
-      background: var(--bg-primary);
+      background: var(--bg-secondary);
       border: 1px solid var(--accent-color);
       padding: 1px 4px;
       margin: -1px 0;
       border-radius: 3px;
       outline: none;
-      color: var(--text-primary);
+      color: var(--accent-color); /* Teks saat edit menjadi cyan */
     }
 
     .children {
@@ -261,29 +270,36 @@
     .action-btn {
       padding: 8px 12px;
       border: none;
-      color: white; 
+      color: var(--bg-primary); /* Teks gelap di atas tombol cerah */
       cursor: pointer;
       border-radius: var(--radius);
-      transition: background 0.2s, box-shadow 0.2s;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s; /* Animasi */
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
+    }
+    
+    .action-btn:active {
+        transform: scale(0.98);
     }
 
     .save-btn {
       background: var(--accent-color); /* Cyan cerah */
+      color: #1e1e1e;
     }
 
     .save-btn:hover:not(:disabled) {
-      background: #008392; /* Darker cyan on hover */
-      box-shadow: 0 2px 8px rgba(0, 172, 193, 0.4);
+      background: #7FFFFF; /* Cyan lebih terang on hover */
+      box-shadow: 0 4px 10px rgba(0, 255, 255, 0.4);
     }
 
     .download-btn {
-      background: var(--success-color);
+      background: var(--success-color); /* Hijau cerah */
+      color: #1e1e1e;
     }
 
     .download-btn:hover:not(:disabled) {
-      background: #2e7d32;
+      background: #7CFF9B;
+      box-shadow: 0 4px 10px rgba(80, 250, 123, 0.4);
     }
 
     .save-btn:disabled,
@@ -291,6 +307,7 @@
       background: var(--border-color);
       color: var(--text-secondary);
       cursor: not-allowed;
+      box-shadow: none;
     }
 
     /* Context Menu Styles */
@@ -299,7 +316,7 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); 
       z-index: 2000;
       display: none;
       padding: 5px 0;
@@ -312,6 +329,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: background 0.2s, color 0.2s; /* Animasi */
     }
 
     .context-item:hover {
@@ -322,6 +340,7 @@
     .context-item i {
       color: var(--text-secondary);
       width: 16px;
+      transition: color 0.2s; /* Animasi */
     }
     
     .context-item:hover i {
@@ -343,24 +362,33 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.4); 
+      background: rgba(0, 0, 0, 0.7); 
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 1000;
       display: none;
-      backdrop-filter: blur(2px);
+      backdrop-filter: blur(4px);
+      transition: opacity 0.3s;
     }
 
     .popup {
-      background: var(--bg-primary); /* White popup */
+      background: var(--bg-secondary); 
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
       padding: 25px;
       width: 90%;
       max-width: 350px;
       text-align: center;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      transform: scale(0.95);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s; /* Animasi Elastis */
+    }
+    
+    .popup-overlay[aria-hidden="false"] .popup {
+        transform: scale(1);
+        opacity: 1;
     }
 
     .popup p {
@@ -380,17 +408,21 @@
       border: none;
       border-radius: var(--radius);
       cursor: pointer;
-      font-weight: 500;
-      transition: background 0.2s;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.1s;
+    }
+    
+    .popup-actions button:active {
+        transform: scale(0.98);
     }
 
     #popupYes {
       background: var(--error-color);
-      color: white;
+      color: var(--bg-primary);
     }
 
     #popupYes:hover {
-      background: #a92424;
+      background: #ff7777;
     }
 
     #popupNo {
@@ -399,7 +431,7 @@
     }
 
     #popupNo:hover {
-      background: #c7c7c7;
+      background: #555555;
     }
 
     /* Toast (Modern Notification) */
@@ -408,13 +440,21 @@
       bottom: 20px;
       right: 20px;
       background: var(--accent-color); /* Cyan accent for notifications */
-      color: white;
+      color: var(--bg-primary);
       padding: 10px 15px;
       border-radius: var(--radius);
-      box-shadow: 0 4px 12px rgba(0, 172, 193, 0.4);
+      box-shadow: 0 4px 15px rgba(0, 255, 255, 0.5);
       display: none;
       z-index: 2000;
       font-size: 14px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s, transform 0.3s; /* Animasi */
+    }
+    
+    .toast.show {
+        opacity: 1;
+        transform: translateY(0);
     }
   </style>
 </head>
@@ -422,7 +462,7 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="brand">Explorer (Vibrant Cyan)</div>
+      <div class="brand">Explorer</div>
       <div class="add-buttons">
         <button id="addFolderBtn" type="button"><i class="fas fa-folder-plus"></i> Folder</button>
         <button id="addFileBtn" type="button"><i class="fas fa-file-code"></i> File</button>
@@ -523,8 +563,8 @@
       if (lower.endsWith(".html") || lower.endsWith(".htm")) return '<i class="fab fa-html5" style="color:#e34c26;"></i>';
       if (lower.endsWith(".css")) return '<i class="fab fa-css3-alt" style="color:#264de4;"></i>';
       if (lower.endsWith(".js")) return '<i class="fab fa-js-square" style="color:#f7df1e;"></i>';
-      if (lower.endsWith(".json")) return '<i class="fas fa-file-code" style="color:#6a6a6a;"></i>';
-      if (lower.endsWith(".txt")) return '<i class="fas fa-file-alt" style="color:#9e9e9e;">';
+      if (lower.endsWith(".json")) return '<i class="fas fa-file-code" style="color:var(--accent-color);"></i>'; /* Menggunakan Cyan */
+      if (lower.endsWith(".txt")) return '<i class="fas fa-file-alt" style="color:var(--text-secondary);">';
       return '<i class="fas fa-file"></i>';
     }
 
@@ -552,7 +592,7 @@
           
           const iconEl = document.createElement('i'); 
           iconEl.className = isOpen ? "fas fa-folder-open" : "fas fa-folder";
-          iconEl.style.color = "#ffc107"; /* Bright yellow for folders on light background */
+          iconEl.style.color = "#FFD700"; /* Gold untuk Folder */
           
           const nameEl = document.createElement("div");
           nameEl.className = "name";
@@ -947,8 +987,10 @@
     function showPopup(msg, action) {
       popupMsg.textContent = msg;
       popupOverlay.style.display = "flex";
+      // Tambahkan kelas untuk memicu animasi
+      setTimeout(() => popupOverlay.setAttribute("aria-hidden", "false"), 10);
+      
       popupAction = action;
-      popupOverlay.setAttribute("aria-hidden", "false");
       popupNo.focus(); 
     }
     
@@ -965,17 +1007,26 @@
     };
 
     function closePopup() {
-      popupOverlay.style.display = "none";
       popupOverlay.setAttribute("aria-hidden", "true");
-      popupAction = null;
+      // Sembunyikan setelah animasi selesai
+      setTimeout(() => {
+        popupOverlay.style.display = "none";
+        popupAction = null;
+      }, 300); 
     }
 
     // Toast
     function showToast(msg, ms = 2000) {
       toast.textContent = msg;
       toast.style.display = "block";
+      // Tambahkan kelas 'show' untuk memicu animasi masuk
+      setTimeout(() => toast.classList.add('show'), 10);
+      
       setTimeout(() => {
-        toast.style.display = "none";
+        // Hapus kelas 'show' untuk memicu animasi keluar
+        toast.classList.remove('show');
+        // Sembunyikan setelah animasi keluar selesai
+        setTimeout(() => toast.style.display = "none", 300); 
       }, ms);
     }
 
