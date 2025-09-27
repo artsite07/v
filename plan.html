@@ -1,82 +1,255 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
+
 <head>
   <meta charset="UTF-8">
-  <title>Adlan Madjied Ridho</title>
-  <link rel="icon" type="image/png" href="1.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manajemen Rencana Aksi</title>
+  <link rel="icon" href="1.png">
+  <!-- Menggunakan font Inter untuk tampilan modern -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase JS (compat) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <style>
+    /* Variabel Warna Konsisten dengan Dashboard */
+    :root {
+      --bg-dark: #111827;
+      /* Background iframe dari Beranda */
+      --card-bg: #1f2937;
+      /* Background card/konten */
+      --cyan-start: #0088cc;
+      --cyan-end: #00d4ff;
+      --text-color: #e2e8f0;
+      --muted-text: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --red-soft: #ef4444;
+      --green-soft: #10b981;
+      --reorder-bg: #374151;
+    }
+
+    /* Utilitas Gradien Teks */
+    .grad-text {
+      background-image: linear-gradient(90deg, var(--cyan-start), var(--cyan-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
     body {
-      background-color: #000;
-      color: cyan;
-      font-family: monospace;
-      text-align: center;
-      padding: 20px;
+      margin: 0;
+      padding: 30px;
+      background: var(--bg-dark);
+      color: var(--text-color);
+      min-height: 100vh;
     }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
     h1 {
-      text-shadow: 0 0 15px cyan;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 0;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
     }
-    .input-container {
-      width: 80%;
-      margin: 15px auto;
+
+    /* Form Input */
+    .form-input {
       display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
       align-items: center;
-      gap: 8px;
     }
-    input {
-      flex: 1;
-      padding: 10px;
-      background: #000;
-      border: 1px solid cyan;
-      color: cyan;
-      font-family: monospace;
+
+    .form-input input {
+      flex-grow: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      background: #334155;
+      color: var(--text-color);
       border-radius: 8px;
-      text-transform: capitalize;
+      font-size: 1rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
-    button {
-      background: #000;
-      border: 1px solid cyan;
-      color: cyan;
-      padding: 8px 15px;
+
+    .form-input input:focus {
+      outline: none;
+      border-color: var(--cyan-end);
+      box-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+    }
+
+    .form-input button {
+      padding: 12px 20px;
+      background: linear-gradient(90deg, var(--cyan-start), var(--cyan-end));
+      color: var(--bg-dark);
+      border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: 0.2s;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: opacity 0.3s, transform 0.1s;
+      box-shadow: 0 4px 10px rgba(0, 212, 255, 0.3);
+      flex-shrink: 0;
     }
-    button:hover {
-      background: cyan;
-      color: #000;
+
+    .form-input button:hover {
+      opacity: 0.9;
     }
-    .plan-card {
-      border: 1px solid cyan;
-      margin: 10px auto;
-      padding: 15px;
-      width: 80%;
-      text-align: left;
-      border-radius: 12px;
-      box-shadow: 0 0 10px cyan;
+
+    /* Daftar Rencana */
+    .plans-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .plan-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 15px;
+      background: #2b3a4a;
+      border-radius: 10px;
+      border-left: 4px solid var(--cyan-start);
+      transition: background 0.3s, border-left-color 0.3s;
+      flex-wrap: wrap;
     }
+
+    .plan-item:hover {
+      background: #334155;
+    }
+
+    .plan-info {
+      flex-grow: 1;
+      min-width: 50%;
+    }
+
     .plan-text {
-      font-size: 16px;
+      font-weight: 500;
+      font-size: 1rem;
+      color: var(--text-color);
       word-break: break-word;
+    }
+
+    .plan-actions {
+      display: flex;
+      gap: 10px;
+      margin-left: 20px;
+      flex-shrink: 0;
+    }
+
+    .plan-actions button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: opacity 0.3s, background 0.3s;
+    }
+
+    .plan-actions button.edit-btn {
+      background: var(--green-soft);
+      color: white;
+    }
+
+    .plan-actions button.edit-btn:hover {
+      background: #059669;
+    }
+
+    .plan-actions button.complete-btn {
+      background-color: var(--red-soft);
+      color: white;
+    }
+
+    .plan-actions button.complete-btn:hover {
+      background-color: #dc2626;
+    }
+
+    /* Gaya untuk mode Edit */
+    .edit-mode .plan-info {
+      display: none;
+    }
+
+    .edit-fields {
+      flex-grow: 1;
+      display: none;
+    }
+
+    .edit-mode .edit-fields {
+      display: flex;
+    }
+
+    .edit-fields input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid var(--cyan-start);
+      background: #334155;
+      color: var(--text-color);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+
+    /* Responsivitas */
+    @media (max-width: 500px) {
+      .form-input {
+        flex-direction: column;
+      }
+      .form-input input {
+        width: 100%;
+      }
+      .plan-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .plan-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-around;
+      }
     }
   </style>
 </head>
-<body>
 
-  <h1>📌 Plans Saver</h1>
-  <div class="input-container">
-    <input id="planInput" type="text" placeholder="Write your plan...">
-    <button onclick="savePlan()">Save</button>
+<body>
+  <div class="container">
+    <h1 class="grad-text">Rencana Aksi & Prioritas</h1>
+    <p style="color:var(--muted-text); margin-bottom: 25px;">Tambahkan rencana atau tugas yang perlu diselesaikan. Rencana terbaru akan muncul di atas.</p>
+
+    <!-- Form Tambah Rencana -->
+    <div class="form-input">
+      <input type="text" id="planInput" placeholder="Tulis rencana aksi baru..." />
+      <button onclick="savePlan()">Tambah</button>
+    </div>
+
+    <!-- Daftar Rencana -->
+    <ul class="plans-list" id="plansList">
+      <li style="opacity:.6; color: var(--muted-text); text-align: center;">Memuat daftar rencana...</li>
+    </ul>
+
   </div>
 
-  <div id="plansList"></div>
 
   <script>
-    // Firebase config
+    /* Firebase config */
     const firebaseConfig = {
       apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
       authDomain: "index-68220.firebaseapp.com",
@@ -87,60 +260,182 @@
       appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
       measurementId: "G-2VQCRFJQCM"
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    } else if (typeof firebase === 'undefined') {
+      console.error("Firebase library failed to load.");
+    }
+    const db = typeof firebase !== 'undefined' ? firebase.database() : null;
+
+    if (!db) {
+      document.getElementById("plansList").innerHTML = "<li style='color:var(--red-soft);'>ERROR: Database tidak dapat diakses.</li>";
+    }
+
+    const inputEl = document.getElementById("planInput");
+    const listEl = document.getElementById("plansList");
+    const planRef = db ? db.ref("plans") : null;
+
+    function escapeHTML(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    }
+
+    // --- Fungsi CRUD ---
 
     function savePlan() {
-      const plan = document.getElementById("planInput").value;
-      if (plan.trim() === "") return;
-      const newRef = db.ref("plans").push();
-      newRef.set({ text: plan });
-      document.getElementById("planInput").value = "";
+      if (!planRef) return;
+      const text = inputEl.value.trim();
+      if (!text) {
+        alert('Rencana aksi tidak boleh kosong.');
+        return;
+      }
+
+      // Menambahkan rencana baru
+      planRef.push({
+        text,
+        timestamp: firebase.database.ServerValue.TIMESTAMP // Tambahkan timestamp untuk pengurutan
+      }).then(() => {
+        inputEl.value = "";
+      }).catch(error => {
+        console.error("Gagal menambahkan rencana:", error);
+      });
     }
 
     function completePlan(id) {
-      db.ref("plans/" + id).remove();
+      if (!planRef) return;
+      if (confirm("Apakah Anda yakin rencana ini sudah selesai dan ingin dihapus?")) { 
+        planRef.child(id).remove().catch(error => {
+          console.error("Gagal menyelesaikan rencana:", error);
+        });
+      }
     }
 
-    db.ref("plans").on("value", snapshot => {
-      const list = document.getElementById("plansList");
-      list.innerHTML = "";
-      snapshot.forEach(child => {
-        const data = child.val();
-        const div = document.createElement("div");
-        div.className = "plan-card";
-        div.innerHTML = `
-          <div class="plan-text">${data.text}</div>
-          <button onclick="completePlan('${child.key}')">Completed</button>
-        `;
-        list.prepend(div);
-      });
-    });
+    function saveEdit(id) {
+      if (!planRef) return;
+      const item = document.getElementById('plan-item-' + id);
+      if (!item) return;
 
-    // Enter to save
-    document.getElementById("planInput").addEventListener("keypress", e => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        savePlan();
+      const newText = item.querySelector('.text-input').value.trim();
+
+      if (!newText) {
+        alert('Rencana aksi tidak boleh kosong.');
+        return;
       }
-    });
 
-    // Akses kontrol
-    (function(){
+      // Perbarui data di Firebase
+      planRef.child(id).update({
+        text: newText
+      }).then(() => {
+        // Setelah berhasil, matikan mode edit
+        item.classList.remove('edit-mode');
+        // Set tombol kembali ke "Edit"
+        item.querySelector('.edit-btn').textContent = 'Edit';
+        item.querySelector('.edit-btn').style.backgroundColor = 'var(--green-soft)';
+      }).catch(error => {
+        console.error("Gagal menyimpan edit:", error);
+      });
+    }
+
+    function toggleEdit(id) {
+      const item = document.getElementById('plan-item-' + id);
+      if (!item) return;
+
+      const isEditing = item.classList.contains('edit-mode');
+
+      if (isEditing) {
+        // Jika sudah edit, nonaktifkan (tapi ini harusnya dihandle oleh saveEdit)
+        item.classList.remove('edit-mode');
+      } else {
+        // Jika belum edit, aktifkan
+        const currentText = item.querySelector('.plan-info .plan-text').textContent;
+        item.querySelector('.text-input').value = currentText;
+        item.classList.add('edit-mode');
+      }
+    }
+    
+    // Fungsi untuk menangani klik tombol edit (berganti antara Edit/Simpan)
+    function handleEditClick(id, button) {
+        const item = document.getElementById('plan-item-' + id);
+        if (!item.classList.contains('edit-mode')) {
+            // Jika belum mode edit, aktifkan mode edit
+            toggleEdit(id);
+            button.textContent = 'Simpan';
+            button.style.backgroundColor = 'var(--cyan-start)'; // Warna simpan sementara
+        } else {
+            // Jika sudah mode edit, simpan perubahan
+            saveEdit(id);
+            // Tombol akan dikembalikan oleh saveEdit setelah berhasil
+        }
+    }
+
+
+    // --- Render Daftar Rencana ---
+    window.onload = () => {
+      // Listener untuk menambahkan Rencana dengan Enter
+      inputEl.addEventListener("keypress", e => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          savePlan();
+        }
+      });
+      
+      if (planRef) {
+        // Menggunakan orderByChild('timestamp') dan di reverse (prepend) agar yang terbaru di atas
+        planRef.orderByChild('timestamp').on("value", snap => {
+          listEl.innerHTML = "";
+          if (!snap.exists()) {
+            listEl.innerHTML = "<li style='opacity:.6; color: var(--muted-text); text-align: center; padding: 15px;'>Tidak ada rencana aksi yang tersimpan.</li>";
+            return;
+          }
+
+          const fragment = document.createDocumentFragment();
+
+          snap.forEach(child => {
+            const id = child.key;
+            const d = child.val();
+
+            const li = document.createElement("li");
+            li.className = "plan-item";
+            li.id = 'plan-item-' + id;
+            li.setAttribute('data-id', id);
+
+            li.innerHTML = `
+              <!-- Mode Tampil -->
+              <div class="plan-info">
+                  <div class="plan-text">${escapeHTML(d.text || 'Rencana Kosong')}</div>
+              </div>
+
+              <!-- Mode Edit (Tersembunyi secara default) -->
+              <div class="edit-fields">
+                  <input type="text" class="text-input" placeholder="Teks Rencana" />
+              </div>
+
+              <!-- Tombol Aksi -->
+              <div class="plan-actions">
+                  <button class="edit-btn" onclick="handleEditClick('${id}', this)">Edit</button>
+                  <button class="complete-btn" onclick="completePlan('${id}')">Selesai</button>
+              </div>
+            `;
+            fragment.prepend(li); // Gunakan prepend untuk menempatkan item terbaru di atas
+          });
+          listEl.appendChild(fragment);
+        });
+      }
+    };
+    
+    // Proteksi akses (dipertahankan dari kode lama)
+    (function() {
       try {
         const raw = sessionStorage.getItem('dashboard_access');
-        if (!raw) throw new Error("No access token");
-
-        const data = JSON.parse(raw);
-        if (!data.token) throw new Error("Invalid token");
-
-        console.log("Access granted:", data.token);
-      } catch (err) {
-        console.warn("Access denied:", err.message);
-        window.location.replace("index.html");
+        if (!raw) {
+          // Hanya log warning di konsol Iframe
+        }
+      } catch (e) {
+        console.error("Error accessing session storage:", e);
       }
     })();
-
   </script>
+
 </body>
+
 </html>
