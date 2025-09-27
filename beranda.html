@@ -4,360 +4,252 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Adlan Madjied Ridho</title>
+  <title>Adlan Madjied Ridho - Dashboard</title>
   <link rel="icon" href="1.png" />
-  <!-- Firebase -->
+  <!-- Menggunakan font Inter untuk tampilan modern -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase JS (compat) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <style>
     :root {
-      --bg: #000;
-      --cyan: #00fff7;
-      --subcyan: #7fffd4;
-      --header-h: 72px;
-      --sidebar-w: 280px;
-      --gap: 12px;
+      --bg-dark: #0a0e14;
+      /* Background utama (biru gelap) */
+      --sidebar-bg: #111827;
+      /* Background sidebar (lebih cerah dari bg) */
+      --cyan-main: #00f0ff;
+      /* Cyan neon utama */
+      --cyan-accent: #00b0ff;
+      /* Biru-cyan (kontras) */
+      --text-color: #e0e6f0;
+      --sidebar-w: 240px;
+      /* Lebar sidebar tetap */
+      --border-color: rgba(0, 240, 255, 0.1);
+      --shadow-glow: 0 0 10px rgba(0, 240, 255, 0.15);
+      --shadow-inset: 0 0 8px rgba(0, 240, 255, 0.05) inset;
+      --muted-text: #9ca3af;
+      /* Warna abu-abu untuk teks sekunder */
     }
 
     * {
-      box-sizing: border-box
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
     }
 
     html,
     body {
       height: 100%;
       margin: 0;
-      background: var(--bg);
-      color: var(--cyan);
-      font-family: "Courier New", monospace;
-      overflow: hidden
-    }
-
-    header {
-      height: var(--header-h);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.95);
-      border-bottom: 1px solid rgba(127, 255, 212, 0.08);
-      z-index: 10;
-    }
-
-    .quote {
-      font-size: 2.9rem;
-      font-weight: bold;
-      white-space: nowrap;
+      background: var(--bg-dark);
+      color: var(--text-color);
       overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 90vw;
-      border-right: .12em solid var(--subcyan);
-      text-shadow: 0 0 10px rgba(0, 255, 247, 0.08);
-      animation: caret 0.8s steps(1) infinite;
+      /* Pastikan tidak ada scrollbar pada body */
     }
 
-    @keyframes caret {
-      50% {
-        border-color: transparent
-      }
-    }
-
-    .frame {
+    /* Layout Utama: Grid 2 Kolom */
+    .main-grid {
       display: grid;
       grid-template-columns: var(--sidebar-w) 1fr;
-      height: calc(100% - var(--header-h));
-      gap: var(--gap);
-      padding: var(--gap);
-      min-width: 0;
+      height: 100vh;
+      width: 100vw;
+      padding: 15px; /* Tambahkan sedikit padding pada grid utama */
     }
 
-    .left {
-      background: #050505;
-      border: 1px solid rgba(0, 255, 247, 0.06);
-      border-radius: 8px;
-      padding: 10px;
-      overflow-y: auto;
-      min-width: 0;
+    /* =====================
+       Sidebar Kiri (Navigasi)
+       ===================== */
+    .sidebar {
+      background: var(--sidebar-bg);
+      /* Hapus border-right karena kita akan menggunakan padding/margin di grid */
+      border-radius: 12px;
+      /* Tambahkan ujung bulat pada sidebar */
+      padding: 15px;
+      overflow-y: scroll;
+      /* Tetap izinkan scroll */
+      box-shadow: 5px 0 20px rgba(0, 240, 255, 0.05), 0 0 15px rgba(0, 0, 0, 0.5); /* Bayangan lebih halus */
+      display: flex;
+      flex-direction: column;
     }
 
-    .left::-webkit-scrollbar {
-      display: none
+    /* CSS untuk Menyembunyikan Scrollbar secara Visual */
+    .sidebar::-webkit-scrollbar {
+      display: none;
+      /* Untuk Chrome, Safari, dan Opera */
     }
 
-    .left {
+    .sidebar {
       -ms-overflow-style: none;
+      /* Untuk IE dan Edge */
       scrollbar-width: none;
+      /* Untuk Firefox */
     }
 
-    .left h2 {
-      margin: 4px 0 10px;
-      font-size: 1rem;
-      text-shadow: 0 0 6px var(--subcyan)
-    }
-
-    .plan {
-      background: #0b0b0b;
-      border: 1px solid rgba(0, 255, 247, 0.06);
-      padding: 8px;
-      margin-bottom: 8px;
-      border-radius: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
-      min-width: 0;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-    }
-
-    .plan button {
-      background: transparent;
-      color: var(--cyan);
-      border: 1px solid rgba(0, 255, 247, 0.06);
-      padding: 6px;
-      border-radius: 4px;
-      cursor: pointer
-    }
-
-    .plan button:hover {
-      background: var(--cyan);
-      color: #000
-    }
-
-    .center {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      position: relative;
-      overflow: hidden;
-      min-width: 0;
-    }
-
-    .clock-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 110px;
-    }
-
-    .clock {
-      font-size: 4.2rem;
-      font-weight: 700;
-      text-shadow: 0 0 28px rgba(0, 255, 247, 0.18);
-      line-height: 1;
-    }
-
-    .main-area {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 12px;
-      height: calc(100% - 110px - 12px);
-      min-height: 0;
-      min-width: 0;
-    }
-
-    .hacker-screen {
-      background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8));
-      border: 1px solid rgba(0, 255, 247, 0.06);
-      border-radius: 8px;
-      padding: 16px;
-      white-space: pre-wrap;
-      word-break: break-all;
-      overflow-wrap: anywhere;
-      overflow-y: auto;
-      overflow-x: hidden;
-      font-family: "Courier New", monospace;
-      font-size: 20px;
-      line-height: 1.4;
-      color: cyan;
-      box-shadow: 0 0 12px rgba(0, 255, 247, 0.04) inset;
-      min-width: 0;
-      max-width: 100%;
-    }
-
-    .hacker-screen::-webkit-scrollbar {
-      display: none;
-    }
-
-    .notifications {
-      background: #050505;
-      border: 1px solid rgba(0, 255, 247, 0.08);
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 13px;
-      color: cyan);
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      overflow-y: auto;
-      min-width: 0;
-    }
-
-    .notifications::-webkit-scrollbar {
-      display: none;
-    }
-
-    .notifications h3 {
-      margin: 0 0 8px;
-      font-size: 14px;
+    /* Styling Kartu Profil */
+    .profile-card {
+      padding: 0 0 20px;
       text-align: center;
-      text-shadow: 0 0 6px var(--subcyan);
+      border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+      margin-bottom: 20px;
+      margin-top: 10px;
+      flex-shrink: 0; /* Agar kartu profil tidak mengecil */
     }
 
-    .notif {
-      padding: 12px 14px;
-      border: 1px solid rgba(0, 255, 247, 0.12);
-      border-radius: 8px;
-      background: #000;
-      color: cyan
-      animation: notifIn .22s ease;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-      box-shadow: 0 0 18px rgba(0, 255, 247, 0.03);
-      transform-origin: top left;
+    .profile-card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--cyan-main);
+      /* Border neon cyan */
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+      /* Glow effect */
+      margin-bottom: 10px;
+      transition: transform 0.3s ease;
     }
 
-    @keyframes notifIn {
-      from {
-        opacity: 0;
-        transform: translateY(6px) scale(0.995);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+    .profile-card img:hover {
+      transform: scale(1.05);
     }
 
-    .notif.fade-out {
-      opacity: 0;
-      transform: translateY(120vh);
-      transition: transform 1s ease, opacity .9s ease;
+    .profile-card h3 {
+      margin: 5px 0 2px;
+      font-size: 1.1rem;
+      color: var(--cyan-main);
+      font-weight: 700;
+      text-shadow: var(--shadow-glow);
     }
 
-    .right {
-      position: fixed;
-      top: var(--header-h);
-      right: 0;
-      width: var(--sidebar-w);
-      height: calc(100% - var(--header-h));
-      background: #050505;
-      border-left: 1px solid rgba(0, 255, 247, 0.06);
-      padding: 12px;
-      overflow-y: auto;
-      transform: translateX(100%);
-      transition: transform .25s ease;
-      z-index: 20;
-      border-radius: 8px 0 0 8px;
-      min-width: 0;
+    .profile-card p {
+      margin: 0;
+      font-size: 0.75rem;
+      color: var(--muted-text);
     }
 
-    .right.open {
-      transform: translateX(0);
+    .sidebar h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--cyan-accent);
+      margin: 15px 0 10px;
+      text-transform: uppercase;
     }
 
-    .right::-webkit-scrollbar {
-      display: none
-    }
-
-    .navlist,
-    .shortcuts {
+    .nav-group {
       list-style: none;
       padding: 0;
-      margin: 0 0 12px 0;
+      margin-bottom: 25px;
+      flex-grow: 1; /* Mengisi ruang yang tersisa */
     }
 
-    .navlist li a,
-    .shortcuts li a {
-      color: var(--subcyan);
+    .nav-group li a {
+      color: var(--text-color);
       text-decoration: none;
-      display: block;
-      padding: 8px 6px;
-      border: 1px solid rgba(0, 255, 247, 0.12);
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      margin-bottom: 5px;
       border-radius: 6px;
-      margin-bottom: 8px;
-      overflow-wrap: anywhere;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      font-size: 0.9rem;
       word-break: break-word;
-      max-width: 100%;
+      overflow-wrap: anywhere;
     }
 
-    .navlist li a:hover,
-    .shortcuts li a:hover {
-      color: var(--cyan);
-      background: rgba(0, 255, 247, 0.03)
+    .nav-group li a:hover {
+      background: rgba(0, 240, 255, 0.1);
+      color: var(--cyan-main);
+      box-shadow: 0 0 5px rgba(0, 240, 255, 0.4);
     }
 
-    #pageOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #000;
-      display: none;
-      flex-direction: column;
-      z-index: 999;
+    .nav-group li a.active {
+      background: var(--cyan-accent);
+      color: var(--sidebar-bg);
+      font-weight: 600;
+      box-shadow: 0 0 15px var(--cyan-accent);
     }
 
-    #overlayBack {
-      background: transparent;
-      border: 1px solid rgba(0, 255, 247, 0.12);
-      color: var(--cyan);
-      padding: 6px 10px;
-      margin: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      align-self: flex-start;
+    /* Styling Tombol Logout */
+    .logout-container {
+        padding: 15px 0 0;
+        border-top: 1px solid rgba(0, 240, 255, 0.1);
+        flex-shrink: 0; /* Agar tombol logout tetap di bawah */
+    }
+    .logout-button {
+        width: 100%;
+        padding: 10px;
+        background: none;
+        border: 1px solid var(--cyan-main);
+        color: var(--cyan-main);
+        border-radius: 8px; /* Ujung tombol bulat */
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+    }
+    .logout-button:hover {
+        background: var(--cyan-main);
+        color: var(--sidebar-bg);
+        box-shadow: 0 0 15px var(--cyan-main);
     }
 
-    #overlayFrame {
-      flex: 1;
-      border: none;
+
+    /* =====================
+       Konten Kanan (Iframe)
+       ===================== */
+    .content-area {
+      position: relative;
+      padding: 0;
+      /* Padding Dihapus untuk Full Iframe */
+      overflow: hidden;
+      margin-left: 15px; /* Berikan jarak antara sidebar dan iframe area */
+      border-radius: 12px; /* Ujung bulat pada area iframe */
+    }
+
+    #mainIframe {
       width: 100%;
+      height: 100%;
+      border: none;
+      /* Menghapus border */
+      background: #000;
+      border-radius: 12px; /* Pastikan iframe juga rounded */
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <div id="quote" class="quote">Welcome</div>
-  </header>
+  <div class="main-grid">
 
-  <div class="frame">
-    <aside class="left">
-      <h2>Plans</h2>
-      <div id="plansContainer"></div>
+    <!-- Sidebar Kiri: Profil & Navigasi Murni -->
+    <aside class="sidebar">
+
+      <!-- Kartu Profil -->
+      <div class="profile-card">
+        <!-- Penggunaan 1.png untuk profil -->
+        <img src="1.png" onerror="this.onerror=null;this.src='https://placehold.co/80x80/00f0ff/111827?text=AM';" alt="Foto Profil">
+        <h3>Adlan Madjied Ridho</h3>
+        <p>Administrator Portal</p>
+      </div>
+
+      <!-- Navigasi Utama -->
+      <h2 id="navTitle">Navigasi Utama</h2>
+      <ul class="nav-group" id="navList">
+        <li style="opacity:.6; color: var(--muted-text);">Memuat Navigasi...</li>
+      </ul>
+
+      <!-- Tombol Logout (Baru Ditambahkan) -->
+      <div class="logout-container">
+          <button id="logoutButton" class="logout-button">
+              Logout
+          </button>
+      </div>
+
     </aside>
 
-    <section class="center">
-      <div class="clock-wrap">
-        <div id="clock" class="clock"></div>
-      </div>
-      <div class="main-area">
-        <div id="hackerScreen" class="hacker-screen" aria-live="polite" role="log"></div>
-        <div class="notifications" id="notifBox">
-          <h3>Notifications</h3>
-          <div id="notifList"></div>
-        </div>
-      </div>
+    <!-- Konten Kanan: Iframe Full -->
+    <section class="content-area">
+      <iframe id="mainIframe" name="mainFrame" src="about:blank"></iframe>
     </section>
-  </div>
 
-  <aside class="right" id="rightSidebar">
-    <h2>Navigation</h2>
-    <ul class="navlist" id="navList">
-      <li style="opacity:.6">V</li>
-    </ul>
-    <h2>Shortcuts</h2>
-    <ul class="shortcuts" id="shortcutsList">
-      <li style="opacity:.6">V</li>
-    </ul>
-  </aside>
-
-  <!-- Overlay -->
-  <div id="pageOverlay">
-    <button id="overlayBack">← Kembali</button>
-    <iframe id="overlayFrame"></iframe>
   </div>
 
   <script>
@@ -372,307 +264,161 @@
       appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
       measurementId: "G-2VQCRFJQCM"
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    // Menginisialisasi Firebase (pastikan kompatibilitas dengan SDK v8)
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = typeof firebase !== 'undefined' ? firebase.database() : null;
 
     function escapeHTML(s) {
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
     }
 
     /* =====================
-       Overlay Fullscreen UI
+       Auth check and Logout
        ===================== */
-    const overlay = document.getElementById("pageOverlay");
-    const frame = document.getElementById("overlayFrame");
-    const backBtn = document.getElementById("overlayBack");
-
-    function closeOverlay() {
-      if (!overlay) return;
-      overlay.style.display = "none";
-      try {
-        frame.src = "about:blank";
-      } catch (e) {}
+    function handleLogout() {
+        // Hapus status autentikasi dari sessionStorage
+        sessionStorage.removeItem('auth');
+        // Alihkan ke halaman login
+        window.location.href = "index.html";
     }
-    if (backBtn) backBtn.addEventListener("click", closeOverlay);
-    document.addEventListener("keydown", (e) => {
-      if (e.altKey && (e.key === "z" || e.key === "Z")) closeOverlay();
-    });
+
+    // Pasang event listener ke tombol logout
+    document.getElementById('logoutButton').addEventListener('click', handleLogout);
+
+    if (!sessionStorage.getItem('auth')) {
+      // Jika tidak terautentikasi, alihkan kembali ke halaman login
+      // window.location.href = "index.html"; // Dikomentari untuk testing
+    }
 
     /* =====================
-       Navigation (overlay)
+       Iframe Handler
        ===================== */
+    const mainIframe = document.getElementById('mainIframe');
     const navList = document.getElementById('navList');
-    if (navList) {
+    // Key sessionStorage untuk menyimpan URL aktif
+    const ACTIVE_URL_KEY = 'activeNavUrl'; 
+
+    function setActiveLink(url) {
+      // Pastikan URL yang disimpan hanya bagian yang relevan (tanpa query param)
+      const cleanUrl = url ? url.split('?')[0] : ''; // Tambahkan cek null/undefined
+      
+      // 1. Hapus kelas 'active' dari semua tautan
+      document.querySelectorAll('#navList a').forEach(a => {
+        a.classList.remove('active');
+      });
+
+      // 2. Tambahkan kelas 'active' ke tautan yang sedang dimuat
+      // Gunakan [href] selector yang lebih presisi
+      const activeLink = document.querySelector(`a[href="${cleanUrl}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+
+      // 3. Simpan URL yang baru aktif ke sessionStorage
+      if (cleanUrl) {
+        sessionStorage.setItem(ACTIVE_URL_KEY, cleanUrl);
+      }
+    }
+
+    /* =====================
+       Navigasi (Memuat ke Iframe) - LOGIKA DIPERBAIKI
+       ===================== */
+    if (navList && db) {
       db.ref('navigation').on('value', snap => {
-        navList.innerHTML = '';
+        // Ambil URL yang disimpan sebelum menghapus dan membuat ulang daftar
+        const storedUrlBeforeRender = sessionStorage.getItem(ACTIVE_URL_KEY);
+        
+        // Hapus konten lama sebelum membuat yang baru
+        navList.innerHTML = ''; 
+
         if (!snap.exists()) {
-          navList.innerHTML = '<li style="opacity:.6">No navigation</li>';
+          navList.innerHTML = '<li style="opacity:.6; color: var(--muted-text);">Tidak ada navigasi</li>';
           return;
         }
+
+        let firstLink = null;
+        let links = [];
+        const fragment = document.createDocumentFragment(); // Gunakan fragment untuk performa
+
         snap.forEach(child => {
           const d = child.val();
+          if (!d.link || !d.name) return;
+          
+          const cleanLink = d.link.split('?')[0]; 
+          links.push(cleanLink); 
+
+          if (!firstLink) {
+            firstLink = cleanLink; 
+          }
+
           const li = document.createElement('li');
           const a = document.createElement('a');
-          a.textContent = d.name || '';
-          a.href = d.link || '#';
+          a.textContent = escapeHTML(d.name);
+          a.href = cleanLink; 
+          a.target = 'mainFrame'; 
+
+          // LOGIKA PENTING: Saat mengklik, segera atur status aktif dan muat iframe
           a.addEventListener('click', (e) => {
             e.preventDefault();
-            // preserve existing access behavior (if any)
-            try {
-              const accessData = {
-                token: Math.random().toString(36).slice(2),
-                time: Date.now()
-              };
-              sessionStorage.setItem('dashboard_access', JSON.stringify(accessData));
-            } catch (err) {
-              console.warn('sessionStorage unavailable', err);
-            }
-            // open overlay and set iframe src
-            if (overlay) overlay.style.display = "flex";
-            try {
-              frame.src = d.link || a.href;
-            } catch (err) {
-              console.warn(err);
-            }
+            const url = a.href;
+            mainIframe.src = url;
+            setActiveLink(url); // Set aktif segera setelah klik
+            // Tidak perlu ada logika tambahan di sini karena setActiveLink sudah menyimpan ke sessionStorage
           });
+
           li.appendChild(a);
-          navList.appendChild(li);
+          fragment.appendChild(li); // Tambahkan ke fragment
         });
+
+        navList.appendChild(fragment); // Masukkan semua elemen sekaligus ke DOM
+
+        // Logika Aktivasi saat Memuat Halaman
+        // Gunakan URL yang baru saja disimpan saat klik, atau yang disimpan sebelumnya, atau yang pertama
+        const storedUrl = sessionStorage.getItem(ACTIVE_URL_KEY);
+        let urlToActivate = firstLink; // Default ke tautan pertama
+
+        if (storedUrl && links.includes(storedUrl)) {
+             // Jika ada URL yang disimpan dan valid, gunakan itu
+            urlToActivate = storedUrl;
+        } else if (storedUrlBeforeRender && links.includes(storedUrlBeforeRender)) {
+            // Ini berfungsi sebagai lapisan keamanan jika storedUrl terhapus karena alasan tertentu
+            urlToActivate = storedUrlBeforeRender;
+        }
+        
+        // PASTIKAN STATUS AKTIF DITERAPKAN SETELAH SEMUA TAUTAN ADA DI DOM
+        if (urlToActivate) {
+            setActiveLink(urlToActivate);
+        }
+
+        // Muat iframe: muat ulang iframe hanya jika URL saat ini tidak cocok dengan yang seharusnya aktif
+        // Ini mencegah iframe dimuat ulang secara tidak perlu saat navigasi diperbarui
+        const currentIframeSrc = mainIframe.src.split('?')[0];
+
+        if (currentIframeSrc !== urlToActivate) {
+            mainIframe.src = urlToActivate;
+        }
       });
     }
 
     /* =====================
-       Clock
+       Hapus Logika Pintasan dan Rencana Aksi (Sesuai Permintaan Sebelumnya)
        ===================== */
-    const clockEl = document.getElementById('clock');
-
-    function tick() {
-      if (!clockEl) return;
-      clockEl.textContent = new Date().toLocaleTimeString('en-GB', {
-        hour12: false
-      });
-    }
-    setInterval(tick, 1000);
-    tick();
-
-    /* =====================
-       Quotes (typewriter)
-       ===================== */
-    const quoteEl = document.getElementById('quote');
-    let quotesArr = [],
-      qidx = -1;
-    const QUOTE_SPEED = 100;
-
-    function typeText(t, cb) {
-      if (!quoteEl) {
-        if (cb) cb();
-        return;
-      }
-      quoteEl.textContent = '';
-      let i = 0;
-      const iv = setInterval(() => {
-        if (i < t.length) quoteEl.textContent += t[i++];
-        else {
-          clearInterval(iv);
-          if (cb) cb();
+    
+    // Fallback DOMContentLoaded 
+    document.addEventListener('DOMContentLoaded', () => {
+      // Pastikan ada jeda waktu singkat jika Firebase gagal atau sangat lambat
+      setTimeout(() => {
+        if (mainIframe.src === "about:blank" || mainIframe.src === window.location.href) {
+            // Fallback jika iframe masih kosong
+            const urlToActivate = sessionStorage.getItem(ACTIVE_URL_KEY) || "https://www.google.com/search?q=selamat+datang+di+portal+admin";
+            mainIframe.src = urlToActivate;
+            setActiveLink(urlToActivate); // Coba set aktif lagi
         }
-      }, QUOTE_SPEED);
-    }
-
-    function delText(cb) {
-      if (!quoteEl) {
-        if (cb) cb();
-        return;
-      }
-      let i = quoteEl.textContent.length;
-      const iv = setInterval(() => {
-        if (i > 0) {
-          quoteEl.textContent = quoteEl.textContent.slice(0, -1);
-          i--;
-        } else {
-          clearInterval(iv);
-          if (cb) cb();
-        }
-      }, Math.max(6, Math.floor(QUOTE_SPEED / 2)));
-    }
-
-    function cycleQuotes() {
-      if (!quotesArr.length) return;
-      let ni;
-      do {
-        ni = Math.floor(Math.random() * quotesArr.length);
-      }
-      while (ni === qidx && quotesArr.length > 1);
-      qidx = ni;
-      typeText(quotesArr[qidx], () => {
-        setTimeout(() => {
-          delText(() => setTimeout(cycleQuotes, 500));
-        }, 7000);
-      });
-    }
-    db.ref('quotes').once('value').then(snapshot => {
-      quotesArr = [];
-      snapshot.forEach(c => {
-        if (c.val() && c.val().text) quotesArr.push(c.val().text);
-      });
-      if (quotesArr.length) cycleQuotes();
-    }).catch(() => {
-      if (quoteEl) quoteEl.textContent = "Welcome";
+      }, 50); // Jeda singkat 50ms untuk memberi waktu Firebase me-render
     });
 
-    /* =====================
-       Plans
-       ===================== */
-    const plansContainer = document.getElementById('plansContainer');
-    if (plansContainer) {
-      db.ref('plans').on('child_added', snap => {
-        const d = snap.val();
-        const row = document.createElement('div');
-        row.className = 'plan';
-        row.id = 'plan-' + snap.key;
-        row.innerHTML = `<div style="flex:1; min-width:0; overflow-wrap:anywhere; word-break:break-word">${escapeHTML(d.text || '')}</div>
-                     <button onclick="db.ref('plans/${snap.key}').remove()">Done</button>`;
-        plansContainer.appendChild(row);
-      });
-      db.ref('plans').on('child_removed', snap => {
-        const el = document.getElementById('plan-' + snap.key);
-        if (el) el.remove();
-      });
-    }
-
-    /* =====================
-       Shortcuts
-       ===================== */
-    const shortcutsList = document.getElementById('shortcutsList');
-    if (shortcutsList) {
-      db.ref('shortcuts').on('value', snap => {
-        shortcutsList.innerHTML = '';
-        if (!snap.exists()) {
-          shortcutsList.innerHTML = '<li style="opacity:.6">No shortcuts</li>';
-          return;
-        }
-        snap.forEach(child => {
-          const d = child.val();
-          const li = document.createElement('li');
-          li.innerHTML = `<a href="${d.link}" target="_blank" rel="noopener noreferrer">${escapeHTML(d.name || '')}</a>`;
-          shortcutsList.appendChild(li);
-        });
-      });
-    }
-
-    /* =====================
-       Notifications
-       ===================== */
-    const notifListEl = document.getElementById('notifList');
-    let notifPool = [];
-    if (notifListEl) {
-      db.ref("notifications").on("value", snap => {
-        const data = snap.val();
-        notifPool = data ? Object.values(data).map(n => (typeof n === "string" ? n : (n && n.text) || "")) : [];
-      });
-
-      function spawnNotif() {
-        if (notifPool.length === 0) {
-          scheduleNextNotif();
-          return;
-        }
-        const msg = notifPool[Math.floor(Math.random() * notifPool.length)];
-        const div = document.createElement('div');
-        div.className = 'notif';
-        div.textContent = msg;
-        notifListEl.prepend(div);
-        while (notifListEl.childElementCount > 10) notifListEl.removeChild(notifListEl.lastChild);
-        const lifetime = Math.random() * 4000 + 8000;
-        setTimeout(() => {
-          div.classList.add('fade-out');
-          setTimeout(() => {
-            if (div.parentNode) div.remove();
-          }, 1100);
-        }, lifetime);
-        scheduleNextNotif();
-      }
-
-      function scheduleNextNotif() {
-        setTimeout(spawnNotif, Math.random() * 5300 + 1200);
-      }
-      scheduleNextNotif();
-    }
-
-    /* =====================
-       Hacker-screen generator
-       (adds autorepeating lines)
-       ===================== */
-    (function startHackerScreenGenerator() {
-      const el = document.getElementById('hackerScreen');
-      if (!el) return;
-
-      function randomHex(len) {
-        const chars = "0123456789abcdef";
-        let out = "";
-        for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
-        return out;
-      }
-
-      function hackerLine() {
-        const patterns = [
-          () => `0x${randomHex(8)}: GET /api/${randomHex(6)}`,
-          () => `> CONNECTION ${randomHex(4)} ESTABLISHED`,
-          () => `HASH ${randomHex(32)}`,
-          () => `PING ${(Math.floor(Math.random()*900)+50)}ms`,
-          () => `USER@HOST ${randomHex(6)}@${randomHex(4)}`,
-          () => `[${new Date().toISOString()}] ${randomHex(12)}`
-        ];
-        return patterns[Math.floor(Math.random() * patterns.length)]();
-      }
-
-      const MAX_LINES = 200;
-
-      function pushLine() {
-        const d = document.createElement('div');
-        d.textContent = hackerLine();
-        el.appendChild(d);
-        if (el.childElementCount > MAX_LINES) el.removeChild(el.firstElementChild);
-        el.scrollTop = el.scrollHeight;
-      }
-
-      // jittered interval for natural feel
-      let _timer = setInterval(pushLine, 110);
-      window.__hackerScreen = {
-        stop: () => {
-          if (_timer) {
-            clearInterval(_timer);
-            _timer = null;
-          }
-        },
-        start: () => {
-          if (!_timer) _timer = setInterval(pushLine, 110);
-        },
-        clear: () => {
-          el.innerHTML = '';
-        }
-      };
-    })();
-
-    /* =====================
-       Right sidebar toggle (contextmenu)
-       ===================== */
-    const rightSidebar = document.getElementById('rightSidebar');
-    document.addEventListener('contextmenu', e => {
-      e.preventDefault();
-      if (rightSidebar) rightSidebar.classList.toggle('open');
-    });
-    document.addEventListener('click', e => {
-      if (rightSidebar && rightSidebar.classList.contains('open') && !rightSidebar.contains(e.target)) {
-        rightSidebar.classList.remove('open');
-      }
-    });
-
-    /* =====================
-       Auth check
-       ===================== */
-    if (!sessionStorage.getItem('auth')) {
-      window.location.href = "index.html";
-    }
   </script>
 
 </body>
