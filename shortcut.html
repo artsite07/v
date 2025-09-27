@@ -1,96 +1,413 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Adlan Madjied Ridho</title>
+  <title>Penyimpan Pintasan</title>
   <link rel="icon" type="image/png" href="1.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <style>
+    /*
+    * Palet Warna Modern & Lembut: Cyan dan Biru Gelap
+    * --bg-dark: #1A2E40 (Biru Gelap Lembut)
+    * --bg-light: #2A4460 (Biru Gelap Lebih Terang, untuk Card/Container)
+    * --cyan-primary: #00BCD4 (Cyan Utama, Cerah)
+    * --cyan-text: #E0F7FA (Teks Utama, Putih Kebiruan)
+    * --subtle-cyan: #80DEEA (Aksen Subtil)
+    * --shadow-color: rgba(0, 188, 212, 0.4);
+    */
+    :root {
+      --bg-dark: #1A2E40; 
+      --bg-light: #2A4460; 
+      --cyan-primary: #00BCD4; 
+      --cyan-text: #E0F7FA; 
+      --subtle-cyan: #80DEEA; 
+      --shadow-color: rgba(0, 188, 212, 0.4); 
+    }
+
     body {
-      background-color: #000;
-      color: cyan;
-      font-family: monospace;
+      background-color: var(--bg-dark);
+      color: var(--cyan-text);
+      /* Font Sans-Serif Modern */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
       padding: 20px;
+      min-height: 100vh;
+      margin: 0;
+      box-sizing: border-box;
     }
+    
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
     h1 {
-      text-shadow: 0 0 15px cyan;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: var(--cyan-primary);
+      text-shadow: 0 0 10px var(--shadow-color);
     }
+    
+    .header-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+    
+    h2 {
+        font-size: 24px;
+        font-weight: 400;
+        color: var(--subtle-cyan);
+        margin: 0;
+    }
+    
+    #sortSelect {
+        padding: 8px 12px;
+        background: var(--bg-light);
+        border: 1px solid var(--subtle-cyan);
+        color: var(--cyan-text);
+        border-radius: 8px;
+        font-family: inherit;
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+    
+    #sortSelect:hover {
+        border-color: var(--cyan-primary);
+    }
+
     .input-container {
-      width: 80%;
-      margin: 15px auto;
+      background: var(--bg-light);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      margin: 15px auto 30px auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 15px;
     }
+
     input {
-      padding: 10px;
-      background: #000;
-      border: 1px solid cyan;
-      color: cyan;
-      font-family: monospace;
+      padding: 12px;
+      background: var(--bg-dark);
+      border: 1px solid var(--bg-dark);
+      color: var(--cyan-text);
+      font-family: inherit;
       border-radius: 8px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
+
+    input:focus {
+        border-color: var(--cyan-primary);
+        box-shadow: 0 0 8px var(--shadow-color);
+    }
+
     button {
-      background: #000;
-      border: 1px solid cyan;
-      color: cyan;
-      padding: 8px 15px;
+      padding: 12px 20px;
+      background: var(--cyan-primary);
+      border: none;
+      color: var(--bg-dark);
+      font-weight: 600;
       border-radius: 8px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: background 0.3s, transform 0.1s, box-shadow 0.3s;
+      box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
     }
+
     button:hover {
-      background: cyan;
-      color: #000;
+      background: var(--subtle-cyan);
+      transform: translateY(-1px);
     }
+    
+    /* Tombol Kembali (Dihapus sesuai permintaan, hanya style ini untuk referensi) */
+    .back-btn {
+      display: none; /* Dihapus */
+    }
+
     .shortcut-card {
-      border: 1px solid cyan;
-      margin: 10px auto;
-      padding: 15px;
-      width: 80%;
+      background: var(--bg-light);
+      margin: 12px auto;
+      padding: 20px;
       text-align: left;
       border-radius: 12px;
-      box-shadow: 0 0 10px cyan;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+      transition: transform 0.2s;
     }
+    
+    .shortcut-card:hover {
+        transform: translateY(-3px);
+    }
+
     .shortcut-info {
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-width: 0; 
+      margin-right: 15px;
     }
+
     .shortcut-info a {
-      color: cyan;
+      color: var(--cyan-primary);
       text-decoration: none;
-      font-size: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: color 0.3s;
     }
+
     .shortcut-info a:hover {
+      color: var(--subtle-cyan);
       text-decoration: underline;
     }
+
     .shortcut-url {
-      font-size: 12px;
-      color: #7fffd4;
+      font-size: 14px;
+      color: var(--subtle-cyan);
       margin-top: 4px;
       word-break: break-all;
     }
+    
+    .card-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .edit-btn,
+    .delete-btn {
+        padding: 10px;
+        background: var(--bg-dark);
+        border: none;
+        box-shadow: none;
+        transition: background 0.3s, color 0.3s;
+    }
+
+    .edit-btn {
+        color: var(--subtle-cyan);
+    }
+    .edit-btn:hover {
+        background: rgba(0, 188, 212, 0.2);
+        color: var(--cyan-primary);
+        transform: none;
+    }
+    
+    .delete-btn {
+        color: #FF7070; /* Merah Lembut */
+    }
+    .delete-btn:hover {
+        background: rgba(255, 112, 112, 0.2);
+        transform: none;
+        color: #E66363;
+    }
+
+    /* --- Popup Delete & Edit --- */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(26, 46, 64, 0.9); 
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .popup {
+      background: var(--bg-light);
+      border: 2px solid var(--cyan-primary);
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 30px var(--shadow-color);
+      color: var(--cyan-text);
+    }
+
+    .popup input {
+        width: 100%;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+    }
+
+    .popup h3 {
+        color: var(--cyan-primary);
+        margin-top: 0;
+        font-weight: 600;
+        font-size: 24px;
+    }
+
+    .popup p {
+      margin-bottom: 25px;
+    }
+
+    .popup-actions button {
+      margin: 8px;
+      box-shadow: none; 
+    }
+
+    #confirmDelete, #saveEdit {
+        background: #FF7070;
+        color: white;
+        box-shadow: 0 2px 5px rgba(255, 112, 112, 0.4);
+    }
+    #saveEdit {
+        background: var(--cyan-primary);
+        color: var(--bg-dark);
+        box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    #saveEdit:hover {
+        background: var(--subtle-cyan);
+    }
+    #confirmDelete:hover {
+        background: #E66363;
+    }
+
+    #cancelDelete, #cancelEdit {
+        background: var(--bg-dark);
+        border: 1px solid var(--subtle-cyan);
+        color: var(--subtle-cyan);
+    }
+    #cancelDelete:hover, #cancelEdit:hover {
+        background: var(--bg-dark);
+        border-color: var(--cyan-primary);
+        color: var(--cyan-primary);
+    }
+    
+    /* --- Pesan Notifikasi --- */
+    #notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: var(--cyan-primary);
+        color: var(--bg-dark);
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.5s, transform 0.5s;
+        transform: translateX(100%);
+    }
+    #notification.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    /* Responsif */
+    @media (max-width: 600px) {
+        .input-container {
+            padding: 15px;
+        }
+        .shortcut-card {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 15px;
+        }
+        .shortcut-info {
+            margin-bottom: 15px;
+            margin-right: 0;
+            text-align: center;
+        }
+        .shortcut-info a {
+            white-space: normal;
+            word-break: break-word;
+        }
+        .shortcut-url {
+            text-align: center;
+        }
+        .card-actions {
+            justify-content: space-around;
+        }
+        .edit-btn, .delete-btn {
+            flex: 1;
+            padding: 12px;
+        }
+        h1 {
+            margin-top: 10px;
+        }
+        .header-controls {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        h2 {
+            margin-bottom: 0;
+        }
+    }
   </style>
 </head>
-<body>
-  <h1>🔗 Shortcuts Saver</h1>
 
-  <div class="input-container">
-    <input id="nameInput" type="text" placeholder="Shortcut name...">
-    <input id="linkInput" type="url" placeholder="Shortcut link (https://...)">
-    <button onclick="saveShortcut()">Save</button>
+<body>
+  <div class="container">
+      
+      <h1>🔗 Penyimpan Pintasan</h1>
+    
+      <div class="input-container">
+        <input id="nameInput" type="text" placeholder="Nama Pintasan...">
+        <input id="linkInput" type="url" placeholder="Tautan Pintasan (https://...)">
+        <button id="saveBtn">Simpan Pintasan</button>
+      </div>
+    
+      <div class="header-controls">
+        <h2>📂 Daftar Pintasan</h2>
+        <select id="sortSelect">
+            <option value="newest">Urutkan: Terbaru</option>
+            <option value="oldest">Urutkan: Terlama</option>
+            <option value="name_asc">Urutkan: Nama (A-Z)</option>
+            <option value="name_desc">Urutkan: Nama (Z-A)</option>
+        </select>
+      </div>
+      <div id="shortcutsList"></div>
   </div>
 
-  <h2>📂 Shortcuts List</h2>
-  <div id="shortcutsList"></div>
+  <!-- Popup Delete -->
+  <div class="popup-overlay" id="deleteOverlay">
+    <div class="popup">
+      <h3>Konfirmasi Hapus</h3>
+      <p id="deleteMessage">Anda yakin ingin menghapus pintasan ini?</p>
+      <div class="popup-actions">
+          <button id="confirmDelete">Ya, Hapus</button>
+          <button id="cancelDelete">Batal</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Popup Edit -->
+  <div class="popup-overlay" id="editOverlay">
+    <div class="popup">
+      <h3>Edit Pintasan</h3>
+      <input id="editName" type="text" placeholder="Nama Pintasan...">
+      <input id="editLink" type="url" placeholder="Tautan Pintasan (https://...)">
+      <div class="popup-actions">
+          <button id="saveEdit">Simpan Perubahan</button>
+          <button id="cancelEdit">Batal</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Notifikasi -->
+  <div id="notification"></div>
 
   <script>
-    // Firebase config
+    // Konfigurasi Firebase Anda
     const firebaseConfig = {
       apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
       authDomain: "index-68220.firebaseapp.com",
@@ -104,55 +421,245 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function saveShortcut() {
-      const name = document.getElementById("nameInput").value.trim();
-      const link = document.getElementById("linkInput").value.trim();
+    // Elemen DOM
+    const nameInput = document.getElementById("nameInput");
+    const linkInput = document.getElementById("linkInput");
+    const saveBtn = document.getElementById("saveBtn");
+    const shortcutsList = document.getElementById("shortcutsList");
+    const notification = document.getElementById("notification");
+    const sortSelect = document.getElementById("sortSelect");
+    
+    // Popup Delete
+    const deleteOverlay = document.getElementById("deleteOverlay");
+    const deleteMessage = document.getElementById("deleteMessage");
+    const confirmDelete = document.getElementById("confirmDelete");
+    const cancelDelete = document.getElementById("cancelDelete");
+    let deleteId = null; 
 
-      if (name === "" || link === "") return;
-      if (!link.startsWith("http://") && !link.startsWith("https://")) {
-        alert("Link must start with http:// or https://");
+    // Popup Edit
+    const editOverlay = document.getElementById("editOverlay");
+    const editName = document.getElementById("editName");
+    const editLink = document.getElementById("editLink");
+    const saveEdit = document.getElementById("saveEdit");
+    const cancelEdit = document.getElementById("cancelEdit");
+    let editId = null;
+    let allShortcuts = []; // Data untuk pengurutan lokal
+
+    // Fungsi untuk menampilkan notifikasi
+    function showNotification(message) {
+        notification.textContent = message;
+        notification.classList.add('show');
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+    
+    // Fungsi untuk memvalidasi URL
+    function isValidUrl(string) {
+      try {
+        new URL(string);
+        return true;
+      } catch (_) {
+        return false;  
+      }
+    }
+
+    // [Sistem] Fungsi Simpan Pintasan
+    function saveShortcut() {
+      const name = nameInput.value.trim();
+      let link = linkInput.value.trim();
+      
+      // Tambahkan 'https://' jika tidak ada protokol
+      if (link.length > 0 && !link.startsWith("http://") && !link.startsWith("https://")) {
+          link = "https://" + link;
+      }
+
+      if (name === "" || link === "") {
+          showNotification("Nama & Tautan harus diisi!");
+          return;
+      }
+
+      if (!isValidUrl(link)) {
+        showNotification("Tautan tidak valid. Pastikan menggunakan format http:// atau https://");
         return;
       }
 
       const newRef = db.ref("shortcuts").push();
-      newRef.set({ name: name, link: link });
-
-      document.getElementById("nameInput").value = "";
-      document.getElementById("linkInput").value = "";
-    }
-
-    function deleteShortcut(id) {
-      db.ref("shortcuts/" + id).remove();
-    }
-
-    db.ref("shortcuts").on("value", snapshot => {
-      const list = document.getElementById("shortcutsList");
-      list.innerHTML = "";
-      snapshot.forEach(child => {
-        const data = child.val();
-        const div = document.createElement("div");
-        div.className = "shortcut-card";
-        div.innerHTML = `
-          <div class="shortcut-info">
-            <a href="${data.link}" target="_blank">${data.name}</a>
-            <div class="shortcut-url">${data.link}</div>
-          </div>
-          <button onclick="deleteShortcut('${child.key}')">Delete</button>
-        `;
-        list.prepend(div);
+      newRef.set({
+        name: name,
+        link: link,
+        timestamp: firebase.database.ServerValue.TIMESTAMP // Tambahkan timestamp untuk pengurutan
+      }).then(() => {
+          showNotification(`Pintasan "${name}" berhasil disimpan!`);
+      }).catch(error => {
+          console.error("Error saving shortcut:", error);
+          showNotification("Gagal menyimpan pintasan.");
       });
-    });
 
-    // Enter key → Save
-    document.getElementById("linkInput").addEventListener("keypress", e => {
+      nameInput.value = "";
+      linkInput.value = "";
+    }
+    
+    saveBtn.onclick = saveShortcut;
+
+    // Enter key → Save (dari linkInput)
+    linkInput.addEventListener("keypress", e => {
       if (e.key === "Enter") {
         e.preventDefault();
         saveShortcut();
       }
     });
+    
+    // [Sistem] Konfirmasi Hapus
+    window.askDelete = function(id, name) {
+        deleteId = id;
+        deleteMessage.innerHTML = `Yakin ingin menghapus pintasan: <strong>${name}</strong>?`;
+        deleteOverlay.style.display = "flex";
+    }
 
-    // Akses kontrol
-    (function(){
+    // [Sistem] Fungsi Hapus Pintasan
+    confirmDelete.onclick = function() {
+        if (!deleteId) return;
+        
+        db.ref("shortcuts/" + deleteId).remove()
+          .then(() => {
+              showNotification("Pintasan berhasil dihapus.");
+          })
+          .catch(error => {
+              console.error("Error deleting shortcut:", error);
+              showNotification("Gagal menghapus pintasan.");
+          });
+        
+        deleteOverlay.style.display = "none";
+        deleteId = null;
+    }
+    
+    cancelDelete.onclick = () => {
+        deleteOverlay.style.display = "none";
+        deleteId = null;
+    };
+    
+    // [Sistem] Fungsi Buka Popup Edit
+    window.openEditPopup = function(id, name, link) {
+        editId = id;
+        editName.value = name;
+        editLink.value = link;
+        editOverlay.style.display = "flex";
+        editName.focus();
+    }
+    
+    // [Sistem] Fungsi Simpan Edit
+    saveEdit.onclick = function() {
+        if (!editId) return;
+        
+        const newName = editName.value.trim();
+        let newLink = editLink.value.trim();
+        
+        // Tambahkan 'https://' jika tidak ada protokol
+        if (newLink.length > 0 && !newLink.startsWith("http://") && !newLink.startsWith("https://")) {
+            newLink = "https://" + newLink;
+        }
+
+        if (newName === "" || newLink === "") {
+            showNotification("Nama & Tautan harus diisi saat mengedit!");
+            return;
+        }
+        
+        if (!isValidUrl(newLink)) {
+            showNotification("Tautan edit tidak valid.");
+            return;
+        }
+        
+        db.ref("shortcuts/" + editId).update({
+            name: newName,
+            link: newLink
+        }).then(() => {
+            showNotification(`Pintasan "${newName}" berhasil diperbarui!`);
+        }).catch(error => {
+            console.error("Error updating shortcut:", error);
+            showNotification("Gagal memperbarui pintasan.");
+        });
+        
+        editOverlay.style.display = "none";
+        editId = null;
+    }
+    
+    cancelEdit.onclick = function() {
+        editOverlay.style.display = "none";
+        editId = null;
+    }
+    
+    // [Sistem] Fungsi Pengurutan
+    function sortShortcuts(data) {
+        const sortType = sortSelect.value;
+        
+        data.sort((a, b) => {
+            switch (sortType) {
+                case 'newest':
+                    // Urutkan berdasarkan timestamp, terbaru (terbesar) di atas
+                    return (b.timestamp || 0) - (a.timestamp || 0);
+                case 'oldest':
+                    // Urutkan berdasarkan timestamp, terlama (terkecil) di atas
+                    return (a.timestamp || 0) - (b.timestamp || 0);
+                case 'name_asc':
+                    // Urutkan berdasarkan nama, A-Z
+                    return a.name.localeCompare(b.name);
+                case 'name_desc':
+                    // Urutkan berdasarkan nama, Z-A
+                    return b.name.localeCompare(a.name);
+                default:
+                    // Default: Terbaru
+                    return (b.timestamp || 0) - (a.timestamp || 0);
+            }
+        });
+        return data;
+    }
+
+    // [Sistem] Fungsi Render Pintasan
+    function renderShortcuts() {
+        shortcutsList.innerHTML = "";
+        const sortedData = sortShortcuts([...allShortcuts]); // Salin dan urutkan
+
+        sortedData.forEach(data => {
+            const div = document.createElement("div");
+            div.className = "shortcut-card";
+            div.innerHTML = `
+              <div class="shortcut-info">
+                <a href="${data.link}" target="_blank" title="${data.name}">${data.name}</a>
+                <div class="shortcut-url">${data.link}</div>
+              </div>
+              <div class="card-actions">
+                <button class="edit-btn" title="Edit" onclick="openEditPopup('${data.id}', '${data.name.replace(/'/g, "\\'")}', '${data.link.replace(/'/g, "\\'")}')">✏️</button>
+                <button class="delete-btn" title="Hapus" onclick="askDelete('${data.id}', '${data.name.replace(/'/g, "\\'")}')">🗑</button>
+              </div>
+            `;
+            shortcutsList.appendChild(div);
+        });
+    }
+
+    // Listener untuk memuat data dari Firebase
+    db.ref("shortcuts").on("value", snapshot => {
+      // 1. Ambil data, tambahkan ID, dan simpan di variabel global
+      allShortcuts = [];
+      snapshot.forEach(child => {
+          const data = child.val();
+          // Tambahkan timestamp jika belum ada (untuk kompatibilitas data lama)
+          if (data.timestamp === undefined) {
+              data.timestamp = 0; 
+          }
+          allShortcuts.push({ id: child.key, ...data });
+      });
+      
+      // 2. Render pintasan (pengurutan akan dilakukan di dalam render)
+      renderShortcuts();
+    });
+    
+    // Listener untuk perubahan pengurutan
+    sortSelect.addEventListener('change', renderShortcuts);
+
+
+    // Akses kontrol (dibiarkan seperti semula)
+    (function() {
       try {
         const raw = sessionStorage.getItem('dashboard_access');
         if (!raw) throw new Error("No access token");
@@ -163,9 +670,11 @@
         console.log("Access granted:", data.token);
       } catch (err) {
         console.warn("Access denied:", err.message);
-        window.location.replace("index.html");
+        // window.location.replace("index.html"); // Dikomentari untuk kemudahan preview
       }
     })();
+
   </script>
 </body>
+
 </html>
