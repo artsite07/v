@@ -1,642 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <title>Adlan Madjied Ridho</title>
-  <link rel="icon" type="image/png" href="1.png">
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-  <!-- Beautifier -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-html.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-css.min.js"></script>
-
-  <style>
-    :root {
-      --bg: #000;
-      --cyan: cyan;
-      --subcyan: #7fffd4;
-      --sidebar: #050505;
-    }
-
-    html,
-    body {
-      margin: 0;
-      height: 100%;
-      background: var(--bg);
-      color: var(--cyan);
-      font-family: monospace;
-    }
-
-    .app {
-      display: flex;
-      height: 100vh;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 280px;
-      background: var(--sidebar);
-      border-right: 1px solid var(--cyan);
-      padding: 10px;
-      box-sizing: border-box;
-      overflow: auto;
-    }
-
-    .brand {
-      font-size: 18px;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px var(--cyan);
-    }
-
-    .add-buttons {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .add-buttons button {
-      flex: 1;
-      padding: 6px;
-      background: transparent;
-      border: 1px solid var(--cyan);
-      border-radius: 6px;
-      color: var(--cyan);
-      cursor: pointer;
-    }
-
-    .add-buttons button:hover {
-      background: var(--cyan);
-      color: #000;
-    }
-
-    .tree {
-      font-size: 14px;
-    }
-
-    .item {
-      padding: 4px 0 4px 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
-
-    .item:hover {
-      background: rgba(0, 255, 255, 0.05);
-    }
-
-    .item .name {
-      flex: 1;
-      user-select: none;
-      /* prevent browser autofill highlight */
-    }
-
-    .item button {
-      background: transparent;
-      border: none;
-      color: var(--subcyan);
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .item button:hover {
-      color: red;
-    }
-
-    .children {
-      margin-left: 16px;
-      overflow: auto;
-    }
-
-    .add-file-btn {
-      display: block;
-      margin: 4px 0 6px 20px;
-      padding: 2px 6px;
-      background: transparent;
-      border: 1px solid var(--cyan);
-      border-radius: 4px;
-      color: var(--cyan);
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .add-file-btn:hover {
-      background: var(--cyan);
-      color: #000;
-    }
-
-    /* Main editor */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .header {
-      padding: 10px;
-      border-bottom: 1px solid var(--cyan);
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .filename {
-      font-weight: bold;
-    }
-
-    .editor {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: auto;
-    }
-
-    .editor textarea {
-      flex: 1;
-      background: #111;
-      color: var(--cyan);
-      border: none;
-      padding: 12px;
-      font-family: monospace;
-      font-size: 14px;
-      outline: none;
-      resize: none;
-      white-space: pre;
-      overflow: auto;
-    }
-
-    .save-btn {
-      padding: 8px 14px;
-      background: transparent;
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      cursor: pointer;
-      border-radius: 8px;
-      margin: 10px;
-      align-self: flex-start;
-    }
-
-    .save-btn:hover {
-      background: var(--cyan);
-      color: #000;
-    }
-
-    /* Popup confirm */
-    .popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      display: none;
-    }
-
-    .popup {
-      background: #111;
-      border: 1px solid var(--cyan);
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 300px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-    }
-
-    .popup p {
-      margin-bottom: 16px;
-    }
-
-    .popup button {
-      margin: 0 6px;
-      padding: 8px 14px;
-      border: 1px solid var(--cyan);
-      background: transparent;
-      color: var(--cyan);
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .popup button:hover {
-      background: var(--cyan);
-      color: #000;
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #111;
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
-      padding: 8px 12px;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
-      display: none;
-      z-index: 2000;
-    }
-
-    [contenteditable="true"] {
-      outline: none;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-    }
-
-    /* -------------------------------
-       Hide scrollbars visually but keep scrolling working
-       Works for WebKit, Firefox, and IE/Edge
-       ------------------------------- */
-    .sidebar::-webkit-scrollbar,
-    .children::-webkit-scrollbar,
-    .editor textarea::-webkit-scrollbar,
-    .editor::-webkit-scrollbar {
-      width: 0px;
-      height: 0px;
-      display: none;
-    }
-
-    .sidebar,
-    .children,
-    .editor textarea,
-    .editor {
-      -ms-overflow-style: none;
-      /* IE and Edge */
-      scrollbar-width: none;
-      /* Firefox */
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Adlan Madjied Ridho</title>
+<link rel="icon" type="image/png" href="1.png">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-html.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<style>
+:root{--bg:#000;--cyan:cyan;--subcyan:#7fffd4;--sidebar:#050505;}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--cyan);font-family:monospace;scrollbar-width:none;-ms-overflow-style:none;}
+html::-webkit-scrollbar, body::-webkit-scrollbar, .sidebar::-webkit-scrollbar, .editor::-webkit-scrollbar, .children::-webkit-scrollbar {width:0;height:0;}
+.app{display:flex;height:100vh;}
+.sidebar{width:280px;background:var(--sidebar);border-right:1px solid var(--cyan);padding:10px;box-sizing:border-box;overflow:auto;position:relative;}
+.brand{font-size:18px;margin-bottom:10px;text-shadow:0 0 10px var(--cyan);}
+.add-buttons{display:flex;gap:6px;margin-bottom:10px;}
+.add-buttons button{flex:1;padding:6px;background:transparent;border:1px solid var(--cyan);border-radius:6px;color:var(--cyan);cursor:pointer;}
+.add-buttons button:hover{background:var(--cyan);color:#000;}
+.tree{font-size:14px;}
+.item{padding:4px 0 4px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;}
+.item:hover{background:rgba(0,255,255,0.05);}
+.item .name{flex:1;user-select:none;}
+.children{margin-left:16px;overflow:auto;display:none;}
+.add-file-btn{display:block;margin:4px 0 6px 20px;padding:2px 6px;background:transparent;border:1px solid var(--cyan);border-radius:4px;color:var(--cyan);cursor:pointer;font-size:12px;}
+.add-file-btn:hover{background:var(--cyan);color:#000;}
+.main{flex:1;display:flex;flex-direction:column;}
+.header{padding:10px;border-bottom:1px solid var(--cyan);display:flex;justify-content:space-between;}
+.filename{font-weight:bold;}
+.editor{flex:1;display:flex;flex-direction:column;overflow:auto;}
+.editor textarea{flex:1;background:#111;color:var(--cyan);border:none;padding:12px;font-family:monospace;font-size:14px;outline:none;resize:none;white-space:pre;overflow:auto;}
+.save-btn{padding:8px 14px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);cursor:pointer;border-radius:8px;margin:10px;align-self:flex-start;}
+.save-btn:hover{background:var(--cyan);color:#000;}
+.toast{position:fixed;bottom:20px;right:20px;background:#111;border:1px solid var(--cyan);color:var(--cyan);padding:8px 12px;border-radius:8px;box-shadow:0 0 12px rgba(0,255,255,0.3);display:none;z-index:2000;}
+#contextMenu{position:absolute;display:none;background:#111;border:1px solid cyan;border-radius:6px;z-index:5000;}
+#contextMenu .ctxOption{padding:6px 12px;cursor:pointer;}
+#contextMenu .ctxOption:hover{background:cyan;color:#000;}
+#confirmPopup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+background:#111;border:1px solid cyan;padding:20px;border-radius:8px;z-index:10000;text-align:center;min-width:220px;}
+#confirmPopup button{padding:6px 12px;margin:0 6px;border:1px solid cyan;border-radius:6px;background:transparent;color:var(--cyan);cursor:pointer;}
+#confirmPopup button:hover{background:cyan;color:#000;}
+</style>
 </head>
-
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">Explorer</div>
-      <div class="add-buttons">
-        <button id="addFolderBtn" type="button">+ Folder</button>
-      </div>
-      <div id="tree" class="tree" aria-label="Explorer tree"></div>
-    </aside>
-    <main class="main">
-      <div class="header">
-        <div class="filename" id="fileName">No file selected</div>
-      </div>
-      <div class="editor">
-        <!-- disable spellcheck/autocorrect/autocomplete behaviors -->
-        <textarea id="codeArea" placeholder="Select a file to edit..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Code editor" disabled></textarea>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Explorer</div>
+    <div class="add-buttons">
+      <button id="addFolderBtn" type="button">+ Folder</button>
+    </div>
+    <div id="tree" class="tree" aria-label="Explorer tree"></div>
+  </aside>
+  <main class="main">
+    <div class="header">
+      <div class="filename" id="fileName">No file selected</div>
+    </div>
+    <div class="editor">
+      <textarea id="codeArea" placeholder="Select a file to edit..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Code editor" disabled></textarea>
+      <div style="display:flex; gap:10px; margin:10px;">
         <button class="save-btn" id="saveBtn" type="button" disabled>Save</button>
       </div>
-    </main>
-  </div>
-
-  <!-- Popup confirm -->
-  <div class="popup-overlay" id="popupOverlay" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="popup">
-      <p id="popupMsg">Are you sure?</p>
-      <button id="popupYes" type="button">Yes</button>
-      <button id="popupNo" type="button">Cancel</button>
     </div>
-  </div>
+  </main>
+</div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast">Saved successfully!</div>
+<div class="toast" id="toast">Saved successfully!</div>
+<div id="contextMenu">
+  <div class="ctxOption" data-action="rename">Rename</div>
+  <div class="ctxOption" data-action="download">Download</div>
+  <div class="ctxOption" data-action="delete">Delete</div>
+</div>
+<div id="confirmPopup">
+  <div id="confirmMsg">Apakah Anda yakin?</div>
+  <button id="confirmYes">Yes</button>
+  <button id="confirmNo">Cancel</button>
+</div>
 
-  <script>
-    // Firebase config (provided)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",
-      authDomain: "index-68220.firebaseapp.com",
-      databaseURL: "https://index-68220-default-rtdb.firebaseio.com",
-      projectId: "index-68220",
-      storageBucket: "index-68220.firebasestorage.app",
-      messagingSenderId: "633087068802",
-      appId: "1:633087068802:web:f8aa1f2ef9c00b99d1429b",
-      measurementId: "G-2VQCRFJQCM"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+<script>
+// ===== Firebase Config =====
+const firebaseConfig={apiKey:"AIzaSyCba6M_spBXvuG91Zn-XWJ4bSTX6vNcST0",authDomain:"index-68220.firebaseapp.com",databaseURL:"https://index-68220-default-rtdb.firebaseio.com",projectId:"index-68220",storageBucket:"index-68220.firebasestorage.app",messagingSenderId:"633087068802",appId:"1:633087068802:web:f8aa1f2ef9c00b99d1429b",measurementId:"G-2VQCRFJQCM"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
 
-    const treeEl = document.getElementById("tree");
-    const codeArea = document.getElementById("codeArea");
-    const fileNameEl = document.getElementById("fileName");
-    const saveBtn = document.getElementById("saveBtn");
-    const toast = document.getElementById("toast");
-    const popupOverlay = document.getElementById("popupOverlay");
-    const popupMsg = document.getElementById("popupMsg");
-    const popupYes = document.getElementById("popupYes");
-    const popupNo = document.getElementById("popupNo");
+// ===== Elements =====
+const treeEl=document.getElementById("tree"), codeArea=document.getElementById("codeArea"), fileNameEl=document.getElementById("fileName"), saveBtn=document.getElementById("saveBtn"), toast=document.getElementById("toast");
+const contextMenu=document.getElementById("contextMenu"), confirmPopup=document.getElementById("confirmPopup"), confirmMsg=document.getElementById("confirmMsg");
+const confirmYes=document.getElementById("confirmYes"), confirmNo=document.getElementById("confirmNo");
 
-    let currentFilePath = null; // e.g. "/<folderId>/children/<fileId>"
-    let currentFileName = null; // e.g. "index.html"
-    let popupAction = null;
-    const expandedFolders = {};
+let currentFileKey=null,currentFileName=null,currentFolderKeys=[],expandedFolders={},contextTarget=null,confirmCallback=null,cacheExplorer={};
 
-    // Render tree from plain object (explorer root value)
-    function renderTree(obj, parentEl, path = "") {
-      parentEl.innerHTML = "";
-      for (const key in obj) {
-        const data = obj[key];
-        if (!data) continue;
+// ===== Toast =====
+function showToast(msg,ms=1400){toast.textContent=msg; toast.style.display="block";setTimeout(()=>{toast.style.display="none";},ms);}
 
-        if (data.type === "folder") {
-          const itemEl = document.createElement("div");
-          itemEl.className = "item";
-          const nameEl = document.createElement("div");
-          nameEl.className = "name";
-          nameEl.setAttribute("spellcheck", "false"); // avoid browser spell suggestions
+// ===== Beautify =====
+function beautifyString(text,filename){if(!filename) return text; const l=filename.toLowerCase(); if(l.endsWith(".html")||l.endsWith(".htm")) return html_beautify(text,{indent_size:2,end_with_newline:false}); if(l.endsWith(".js")) return js_beautify(text,{indent_size:2}); if(l.endsWith(".css")) return css_beautify(text,{indent_size:2}); return text;}
 
-          const folderKeyPath = path + "/" + key; // e.g. "/<key>"
-          const isOpen = !!expandedFolders[folderKeyPath];
-          nameEl.textContent = (isOpen ? "📂 " : "📁 ") + data.name;
-
-          const childrenEl = document.createElement("div");
-          childrenEl.className = "children";
-          childrenEl.style.display = isOpen ? "block" : "none";
-
-          // Toggle expand
-          nameEl.onclick = () => {
-            expandedFolders[folderKeyPath] = !expandedFolders[folderKeyPath];
-            nameEl.textContent = (expandedFolders[folderKeyPath] ? "📂 " : "📁 ") + data.name;
-            childrenEl.style.display = expandedFolders[folderKeyPath] ? "block" : "none";
-          };
-
-          // Rename via right-click (clear name immediately)
-          nameEl.oncontextmenu = (e) => {
-            e.preventDefault();
-            nameEl.contentEditable = "true";
-            nameEl.textContent = "";
-            // place caret at end for some browsers
-            const sel = window.getSelection();
-            const range = document.createRange();
-            range.selectNodeContents(nameEl);
-            sel.removeAllRanges();
-            sel.addRange(range);
-            nameEl.focus();
-          };
-          nameEl.onkeydown = e => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              const newName = nameEl.innerText.trim() || "Untitled Folder";
-              db.ref("explorer" + folderKeyPath + "/name").set(newName);
-              nameEl.contentEditable = "false";
-            }
-          };
-          nameEl.onblur = () => {
-            nameEl.contentEditable = "false";
-          };
-
-          itemEl.appendChild(nameEl);
-          itemEl.appendChild(makeDeleteBtn(folderKeyPath, data));
-          parentEl.appendChild(itemEl);
-
-          // render children (files)
-          if (data.children) {
-            renderTree(data.children, childrenEl, folderKeyPath + "/children");
-          }
-
-          // "+ File" button (always at the end)
-          const addFileBtn = document.createElement("button");
-          addFileBtn.className = "add-file-btn";
-          addFileBtn.textContent = "+ File";
-          addFileBtn.onclick = (e) => {
-            e.stopPropagation();
-            db.ref("explorer" + folderKeyPath + "/children").push({
-              type: "file",
-              name: "New File",
-              content: ""
-            });
-            expandedFolders[folderKeyPath] = true; // keep it open
-          };
-          childrenEl.appendChild(addFileBtn);
-
-          parentEl.appendChild(childrenEl);
-
-        } else if (data.type === "file") {
-          const itemEl = document.createElement("div");
-          itemEl.className = "item";
-          const nameEl = document.createElement("div");
-          nameEl.className = "name";
-          nameEl.setAttribute("spellcheck", "false");
-          nameEl.textContent = "📄 " + data.name;
-
-          // click to open
-          nameEl.onclick = () => openFile(path + "/" + key, data);
-
-          // Rename via right-click
-          nameEl.oncontextmenu = (e) => {
-            e.preventDefault();
-            nameEl.contentEditable = "true";
-            nameEl.textContent = "";
-            const sel = window.getSelection();
-            const range = document.createRange();
-            range.selectNodeContents(nameEl);
-            sel.removeAllRanges();
-            sel.addRange(range);
-            nameEl.focus();
-          };
-          nameEl.onkeydown = e => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              const newName = nameEl.innerText.trim() || "Untitled File";
-              db.ref("explorer" + path + "/" + key + "/name").set(newName);
-              nameEl.contentEditable = "false";
-            }
-          };
-          nameEl.onblur = () => {
-            nameEl.contentEditable = "false";
-          };
-
-          itemEl.appendChild(nameEl);
-          itemEl.appendChild(makeDeleteBtn(path + "/" + key, data));
-          parentEl.appendChild(itemEl);
-        }
-      }
+// ===== Render Tree =====
+function renderTree(obj,parentEl,pathKeys=[]){
+  parentEl.innerHTML="";
+  for(const key in obj){
+    const data=obj[key]; if(!data) continue;
+    const itemEl=document.createElement("div"); itemEl.className="item";
+    const nameEl=document.createElement("div"); nameEl.className="name";
+    const currentPathKeys=[...pathKeys,key];
+    if(data.type==="folder"){
+      const folderPath=currentPathKeys.join("/");
+      nameEl.textContent=(expandedFolders[folderPath]?"📂 ":"📁 ")+data.name;
+      const childrenEl=document.createElement("div"); childrenEl.className="children";
+      childrenEl.style.display=expandedFolders[folderPath]?"block":"none";
+      nameEl.onclick=()=>{expandedFolders[folderPath]=!expandedFolders[folderPath]; childrenEl.style.display=expandedFolders[folderPath]?"block":"none"; nameEl.textContent=(expandedFolders[folderPath]?"📂 ":"📁 ")+data.name;};
+      nameEl.oncontextmenu=(e)=>{e.preventDefault(); contextTarget={el:nameEl,type:"folder",pathKeys:currentPathKeys}; showContextMenu(e);};
+      itemEl.appendChild(nameEl); parentEl.appendChild(itemEl);
+      if(data.children) renderTree(data.children,childrenEl,currentPathKeys);
+      const addFileBtn=document.createElement("button"); addFileBtn.className="add-file-btn"; addFileBtn.textContent="+ File";
+      addFileBtn.onclick=(e)=>{e.stopPropagation(); db.ref("explorer/"+key+"/children").push({type:"file",name:"New File",content:""}); expandedFolders[folderPath]=true;};
+      childrenEl.appendChild(addFileBtn); parentEl.appendChild(childrenEl);
+    }else if(data.type==="file"){
+      nameEl.textContent="📄 "+data.name;
+      nameEl.onclick=()=>openFile(key,data,pathKeys);
+      nameEl.oncontextmenu=(e)=>{e.preventDefault(); contextTarget={el:nameEl,type:"file",pathKeys:currentPathKeys}; showContextMenu(e);};
+      itemEl.appendChild(nameEl); parentEl.appendChild(itemEl);
     }
+  }
+}
 
-    function makeDeleteBtn(path, data) {
-      const btn = document.createElement("button");
-      btn.textContent = "🗑";
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        showPopup(`Delete "${data.name}"?`, () => {
-          db.ref("explorer" + path).remove();
-          // if removed file currently open, clear editor
-          if (currentFilePath === path) {
-            currentFilePath = null;
-            currentFileName = null;
-            fileNameEl.textContent = "No file selected";
-            codeArea.value = "";
-            codeArea.disabled = true;
-            saveBtn.disabled = true;
-          }
-        });
-      };
-      return btn;
-    }
+// ===== Open File =====
+function openFile(key,data,folderKeys){
+  currentFileKey=key; currentFolderKeys=folderKeys; currentFileName=data.name||"untitled";
+  fileNameEl.textContent=currentFileName; codeArea.disabled=false; saveBtn.disabled=false;
+  codeArea.value=beautifyString(data.content||"",currentFileName);
+}
 
-    function openFile(path, data) {
-      currentFilePath = path; // e.g. "/<folderId>/children/<fileId>"
-      currentFileName = data.name || "untitled";
-      fileNameEl.textContent = currentFileName;
-      codeArea.disabled = false;
-      saveBtn.disabled = false;
+// ===== Save =====
+function saveFile(){
+  if(!currentFileKey) return;
+  const content=beautifyString(codeArea.value,currentFileName);
+  const path = ["explorer", ...currentFolderKeys, currentFileKey, "content"].join("/");
+  db.ref(path).set(content).then(()=>showToast("Saved successfully!"));
+}
+document.addEventListener("keydown",e=>{if(e.ctrlKey && e.key.toLowerCase()==="s"){e.preventDefault(); saveFile();}});
 
-      const raw = data.content || "";
-      const formatted = beautifyString(raw, currentFileName);
-      codeArea.value = formatted;
-      // ensure no browser spell/autocomplete UI
-      codeArea.setAttribute("spellcheck", "false");
-      codeArea.setAttribute("autocomplete", "off");
-      codeArea.setAttribute("autocorrect", "off");
-      codeArea.setAttribute("autocapitalize", "off");
-    }
+// ===== Context Menu =====
+function showContextMenu(e){contextMenu.style.display="block"; contextMenu.style.left=e.pageX+"px"; contextMenu.style.top=e.pageY+"px";}
+document.addEventListener("click",()=>{contextMenu.style.display="none";});
+contextMenu.querySelectorAll(".ctxOption").forEach(option=>{
+  option.onclick=()=>{
+    if(!contextTarget) return;
+    const {el,type,pathKeys}=contextTarget;
+    if(option.dataset.action==="rename") startRename(el,pathKeys);
+    if(option.dataset.action==="delete") deleteItem(pathKeys);
+    if(option.dataset.action==="download") type==="file"?downloadFile(pathKeys):downloadFolder(pathKeys);
+    contextMenu.style.display="none"; contextTarget=null;
+  };
+});
 
-    function beautifyString(text, filename) {
-      if (!filename) return text;
-      const lower = filename.toLowerCase();
-      if (lower.endsWith(".html") || lower.endsWith(".htm")) {
-        return html_beautify(text, {
-          indent_size: 2,
-          end_with_newline: false
-        });
-      } else if (lower.endsWith(".js")) {
-        return js_beautify(text, {
-          indent_size: 2
-        });
-      } else if (lower.endsWith(".css")) {
-        return css_beautify(text, {
-          indent_size: 2
-        });
-      } else {
-        return text;
-      }
-    }
-
-    // Save (beautify first, save to Firebase, then show toast and update editor)
-    saveBtn.onclick = () => saveFile();
-    document.addEventListener("keydown", e => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
-        e.preventDefault();
-        saveFile();
-      }
-      // allow Enter to confirm popup (handled in showPopup)
-      if (popupOverlay.style.display === "flex" && e.key === "Enter") {
-        if (popupAction) popupAction();
-        closePopup();
-      }
+// ===== Rename =====
+function startRename(targetEl,pathKeys){
+  document.querySelectorAll(".item .name").forEach(el=>el.contentEditable=false);
+  const oldName=targetEl.textContent.replace(/^[📂📁📄]\s*/,"");
+  targetEl.textContent=oldName; targetEl.contentEditable=true; targetEl.focus();
+  const sel=window.getSelection(); const range=document.createRange(); range.selectNodeContents(targetEl); sel.removeAllRanges(); sel.addRange(range);
+  function finishRename(newName){
+    newName=newName.trim()||"Untitled";
+    targetEl.contentEditable=false;
+    db.ref("explorer").once("value").then(snap=>{
+      let obj=snap.val();
+      function setName(o,keys){const k=keys[0]; if(!o[k]) return o; if(keys.length===1){ o[k].name=newName; return o;} if(o[k].children) o[k].children=setName(o[k].children,keys.slice(1)); return o;}
+      const updated=setName(obj,pathKeys);
+      db.ref("explorer").set(updated).then(()=>{renderTree(updated,treeEl); showToast("Renamed: "+newName);});
     });
+  }
+  function cancelRename(){ targetEl.textContent=oldName; targetEl.contentEditable=false;}
+  function keydownHandler(e){if(e.key==="Enter"){e.preventDefault(); finishRename(targetEl.innerText); removeListeners();} if(e.key==="Escape"){e.preventDefault(); cancelRename(); removeListeners();}}
+  function blurHandler(){ cancelRename(); removeListeners();}
+  function removeListeners(){targetEl.removeEventListener("keydown",keydownHandler); targetEl.removeEventListener("blur",blurHandler);}
+  targetEl.addEventListener("keydown",keydownHandler); targetEl.addEventListener("blur",blurHandler);
+}
 
-    function saveFile() {
-      if (!currentFilePath || !currentFileName) return;
-      // beautify current textarea value according to filename
-      const formatted = beautifyString(codeArea.value, currentFileName);
-      // set formatted back to editor (so user sees cleaned content immediately)
-      codeArea.value = formatted;
-      // save to firebase (callback for confirmation)
-      db.ref("explorer" + currentFilePath + "/content").set(formatted, (err) => {
-        if (!err) {
-          showToast("Saved successfully!");
-        } else {
-          showToast("Save failed");
-          console.error("Firebase save error:", err);
-        }
-      });
-    }
-
-    // Popup confirm
-    function showPopup(msg, action) {
-      popupMsg.textContent = msg;
-      popupOverlay.style.display = "flex";
-      popupAction = action;
-      popupOverlay.setAttribute("aria-hidden", "false");
-      popupYes.focus();
-    }
-    popupYes.onclick = () => {
-      if (popupAction) popupAction();
-      closePopup();
-    };
-    popupNo.onclick = closePopup;
-    popupOverlay.onclick = e => {
-      if (e.target === popupOverlay) closePopup();
-    };
-
-    function closePopup() {
-      popupOverlay.style.display = "none";
-      popupOverlay.setAttribute("aria-hidden", "true");
-      popupAction = null;
-    }
-
-    // Toast
-    function showToast(msg, ms = 1400) {
-      toast.textContent = msg;
-      toast.style.display = "block";
-      setTimeout(() => {
-        toast.style.display = "none";
-      }, ms);
-    }
-
-    // Add folder root
-    document.getElementById("addFolderBtn").onclick = () => {
-      db.ref("explorer").push({
-        type: "folder",
-        name: "New Folder",
-        children: {}
-      });
-    };
-
-    // Render tree on DB changes
-    db.ref("explorer").on("value", snap => {
-      const data = snap.val() || {};
-      renderTree(data, treeEl, "");
+// ===== Delete =====
+function deleteItem(pathKeys){
+  const name=pathKeys[pathKeys.length-1];
+  showConfirm("Hapus "+name+"?", ()=>{
+    db.ref("explorer").once("value").then(snap=>{
+      const obj=snap.val();
+      function del(o, keys){if(keys.length===1){delete o[keys[0]]; return o;} const k=keys[0]; if(o[k] && o[k].children) o[k].children=del(o[k].children, keys.slice(1)); return o;}
+      const updated=del(obj,pathKeys);
+      db.ref("explorer").set(updated);
     });
+  });
+}
 
-    // Prevent native autocomplete popup on focus (best-effort)
-    // Note: modern browsers ignore autocomplete on non-form controls; we already disabled spellcheck/autocorrect.
-    window.addEventListener('focusin', (e) => {
-      if (e.target && e.target.getAttribute) {
-        const el = e.target;
-        if (el === codeArea || el.isContentEditable) {
-          // try to set attributes that reduce browser UI
-          el.setAttribute('spellcheck', 'false');
-          el.setAttribute('autocomplete', 'off');
-          el.setAttribute('autocorrect', 'off');
-          el.setAttribute('autocapitalize', 'off');
-        }
+// ===== Confirm Popup =====
+function showConfirm(msg,callback){confirmMsg.textContent=msg; confirmPopup.style.display="block"; confirmCallback=callback;}
+confirmYes.onclick=()=>{confirmPopup.style.display="none"; if(confirmCallback) confirmCallback(); confirmCallback=null;};
+confirmNo.onclick=()=>{confirmPopup.style.display="none"; confirmCallback=null;};
+document.addEventListener("keydown",e=>{if(confirmPopup.style.display==="block" && e.key==="Enter") confirmYes.click(); if(confirmPopup.style.display==="block" && e.key==="Escape") confirmNo.click();});
+
+// ===== Download =====
+function downloadFile(pathKeys){
+  db.ref("explorer").once("value").then(snap=>{
+    let obj=snap.val(); for(const k of pathKeys) obj=obj[k].children?obj[k].children:obj[k];
+    const blob=new Blob([obj.content||""],{type:"text/plain;charset=utf-8"});
+    saveAs(blob,obj.name); showToast("Downloaded: "+obj.name,2000);
+  });
+}
+function downloadFolder(pathKeys){
+  db.ref("explorer").once("value").then(snap=>{
+    let folder=snap.val(); for(const k of pathKeys) folder=folder[k].children?folder[k].children:folder[k];
+    function downloadAll(obj,parent=""){
+      for(const key in obj){
+        const item=obj[key];
+        if(item.type==="file"){ const blob=new Blob([item.content||""],{type:"text/plain;charset=utf-8"}); saveAs(blob,parent?parent+"/"+item.name:item.name); showToast("Downloaded: "+(parent?parent+"/"+item.name:item.name),2000);}
+        else if(item.type==="folder") downloadAll(item.children||{}, parent?parent+"/"+item.name:item.name);
       }
-    });
-    (function() {
-      try {
-        // ambil data akses
-        const raw = sessionStorage.getItem('dashboard_access'); // atau localStorage kalau pakai itu
-        if (!raw) throw new Error("No access token");
+    }
+    downloadAll(folder);
+  });
+}
 
-        const data = JSON.parse(raw);
-        if (!data.token) throw new Error("Invalid token");
+// ===== Add Folder =====
+document.getElementById("addFolderBtn").onclick=()=>{db.ref("explorer").push({type:"folder",name:"New Folder",children:{}});};
 
-        // ✅ Token ada → akses diizinkan
-        console.log("Access granted:", data.token);
-
-      } catch (err) {
-        console.warn("Access denied:", err.message);
-        // arahkan balik ke dashboard
-        window.location.replace("index.html"); // ganti dengan nama file dashboard kamu
-      }
-    })();
-
-
-    // shortcut Ctrl+Z → balik ke dashboard
-    document.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.key.toLowerCase() === "z") {
-        e.preventDefault();
-        window.location.href = "beranda.html";
-      }
-    });
-  </script>
+// ===== Firebase Listener =====
+db.ref("explorer").on("value",snap=>{cacheExplorer=snap.val()||{}; renderTree(cacheExplorer,treeEl,[]);});
+</script>
 </body>
-
 </html>
